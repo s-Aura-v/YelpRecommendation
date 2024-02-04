@@ -1,12 +1,25 @@
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
 public class YelpRecs {
 
-    public static void main(String args[]) {
-        GUI one = new GUI(500,400);
-        one.setUpGUI();
+    public static void main(String args[]) throws FileNotFoundException {
+//        GUI one = new GUI(500,400);
+//        one.setUpGUI();
 
-//        JsonParser parser = new JsonParser();
-//        FileReader reader = new FileReader(".\\");
+        JsonParser parser = new JsonParser();
+        FileReader reader = new FileReader("/Users/survive/Desktop/EEATO/24Spring/CSC365/FebProjectFiles/yelp_dataset/test.json");
 
+        Object obj = parser.parse(reader);
+        System.out.println(obj);
+
+        JsonObject jsonObj = (JsonObject) obj;
+
+        String name = String.valueOf(jsonObj.get("firstName"));
+        System.out.println(name);
 
 //    // Serialization
 //        Gson gson = new Gson();
