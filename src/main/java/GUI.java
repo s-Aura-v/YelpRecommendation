@@ -64,6 +64,18 @@ public class GUI {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
     }
+
+    public void storeString() {
+        ActionListener submitRequest = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                storedInput = input.getText();
+                input.setText("");
+                System.out.println(storedInput);
+            }
+        };
+        submitButton.addActionListener(submitRequest);
+    }
 }
 
 
