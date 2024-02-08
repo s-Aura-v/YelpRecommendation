@@ -14,16 +14,16 @@ public class YelpRecs {
 
     public static void main(String args[]) throws FileNotFoundException {
         GUI one = new GUI(500,400);
-        one.setUpGUI();
-        one.storeString();
+//        one.setUpGUI();
+//        one.storeString();
 
         JsonParser parser = new JsonParser();
         FileReader reader = new FileReader("/Users/survive/Desktop/EEATO/24Spring/CSC365/FebProjectFiles/yelp_dataset/test.json");
 
         Object obj = parser.parse(reader);
-        System.out.println(obj);
+        System.out.println("Test" + obj);
         JsonObject jsonObj = (JsonObject) obj;
-        String name = String.valueOf(jsonObj.get("address"));
+        String name = String.valueOf(jsonObj.get("categories"));
         System.out.println(name);
 
 //        Type type = new TypeToken<Map<String, String>>(){}.getType();
