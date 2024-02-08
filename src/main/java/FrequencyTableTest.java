@@ -3,6 +3,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 
+import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.lang.reflect.Type;
@@ -34,23 +35,34 @@ public class FrequencyTableTest {
 //        System.out.println(map.keySet() + " and " + map.values() + " and " + map.size());
 
 
-        // Trying to use a file reader
-        JsonParser parser = new JsonParser();
-        FileReader reader = new FileReader("/Users/survive/Desktop/EEATO/24Spring/CSC365/FebProjectFiles/yelp_dataset/test.json");
-
-        Object obj = parser.parse(reader);
-        System.out.println("Input: " + obj);
-        JsonObject jsonObj = (JsonObject) obj;
-        String categories = String.valueOf(jsonObj.get("categories"));
-        System.out.println("Output: " + categories);
-        String[] sortedCategories = categories.split(", ");
-//        for (String i : sortedCategories) {
-//            System.out.println("this is string " + i);
+//        // Trying to use a file reader
+        //Bad Implementation - deprecated
+//        JsonParser parser = new JsonParser();
+//        FileReader reader = new FileReader("/Users/survive/Desktop/EEATO/24Spring/CSC365/FebProjectFiles/yelp_dataset/test.json");
+//
+//        Object obj = parser.parse(reader);
+//        System.out.println("Input: " + obj);
+//        JsonObject jsonObj = (JsonObject) obj;
+//        String categories = String.valueOf(jsonObj.get("categories"));
+//        System.out.println("Output: " + categories);
+//        String[] sortedCategories = categories.split(", ");
+////        for (String i : sortedCategories) {
+////            System.out.println("this is string " + i);
+////        }
+//        System.out.println(sortedCategories.length);
+//        for (int i = 0; i < sortedCategories.length; i++) {
+//            System.out.println(sortedCategories[i]);
 //        }
-        System.out.println(sortedCategories.length);
-        for (int i = 0; i < sortedCategories.length; i++) {
-            System.out.println("this is string " + sortedCategories[i] + "length " + sortedCategories.length);
+
+        Gson gson = new Gson();
+        FileReader reader = new FileReader("/Users/survive/Desktop/EEATO/24Spring/CSC365/FebProjectFiles/yelp_dataset/test.json");
+        JsonObject categories = gson.fromJson(reader, JsonObject.class);
+        String[] sortedCategories = String.valueOf(categories.get("categories")).split(", ");
+                for (String i : sortedCategories) {
+            System.out.println(i);
         }
+
+
 
 
 
