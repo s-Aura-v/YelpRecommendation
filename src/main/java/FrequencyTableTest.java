@@ -1,12 +1,12 @@
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.google.gson.reflect.TypeToken;
+import com.google.gson.stream.JsonReader;
 
-import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.lang.reflect.Type;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -66,8 +66,26 @@ public class FrequencyTableTest {
             System.out.println("2: " + entry.getKey() + "\n| 2Freq: " + entry.getValue());
         }
 
+
         //Find idf(t,D)
         
+
+
+
+        //Test for later
+//        FileReader testReader = new FileReader("/Users/survive/Desktop/EEATO/24Spring/CSC365/FebProjectFiles/yelp_dataset/yelp_academic_dataset_review.json");
+//        JsonObject builder = new GsonBuilder().create().fromJson(testReader, JsonObject.class);
+//        JsonReader testReader2 = new JsonReader(testReader).setLenient(true);
+//        JsonReader jsonReader = Json.createReader(new StringReader("[]"));
+//        JsonObject reviews = builder.fromJson(testReader, JsonObject.class);
+//        System.out.println(builder);
+//        InputStream is = /* whatever */
+//                InputStreamReader reee = new InputStreamReader(is, "UTF-8");
+//        Gson gson = new GsonBuilder().create();
+//        JsonStreamParser p = new JsonStreamParser(r);
+
+
+
 
     }
 }
