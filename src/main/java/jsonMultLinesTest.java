@@ -1,12 +1,12 @@
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import java.lang.Number.*;
 import com.google.gson.stream.JsonReader;
 
 import java.io.*;
 import java.util.*;
 
 public class jsonMultLinesTest {
-
     public static void main(String[] args) throws IOException {
         Gson gson = new Gson();
         BufferedReader buffRead;
@@ -23,16 +23,47 @@ public class jsonMultLinesTest {
             e.printStackTrace();
         }
 
-        ArrayList<HashMap<String,Integer>> listOfKeywords = new ArrayList<>();
+        ArrayList<HashMap<String,Double>> listOfKeywords = new ArrayList<>();
         for (int x = 0; x < objects.length; x++) {
             if (objects[x] != null) {
                 frequencyTable(String.valueOf(objects[x].get("categories")).split("\\P{Alnum}+"));
                 listOfKeywords.add(frequencyTable(String.valueOf(objects[x].get("categories")).split("\\P{Alnum}+")));
             }
         }
-        for (int z = 0; z < listOfKeywords.size(); z++) {
-            System.out.println(listOfKeywords.get(z));
+        /*
+     TFIDF(t,d,D) = tf(t,d) * idf(t,D
+     tf(t,d) = n/N
+     n is the number of times term t appears in the document d.
+     N is the total number of terms in the document d.
+
+     idf(t,D) = log (N/( n))
+     N is the number of documents in the data set.
+     n is the number of documents that contain the term t among the data set.
+     */
+
+        //Finding TF-Dif
+        for (HashMap i : listOfKeywords) {
+            for (Object item: i.keySet()) {
+//                System.out.println("key : " + item);
+//                System.out.println("value : " + (i.get(item)));
+                Integer intValues = (Integer) i.get(item);
+                double doubleValues = (double) intValues.doubleValue();
+                double termFrequency = (doubleValues/i.keySet().size());
+                i.replace(item, termFrequency);
+//                System.out.println("keyset:" + item + "\n tF: " + i.get(item));
+            }
+
         }
+
+        // Debug: Print out the HashSet
+        for (HashMap i : listOfKeywords) {
+            for (Object item: i.keySet()) {
+                System.out.println("Keyset: " + item + "\n Keyset TF: " + i.get(item));
+            }
+        }
+
+        //idf
+        
 
     }
 
