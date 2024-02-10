@@ -42,6 +42,7 @@ public class jsonMultLinesTest {
      */
 
         //Finding TF-Dif
+        ArrayList<HashMap<String,Double>> listOfKeywordsBackup = listOfKeywords;
         for (HashMap i : listOfKeywords) {
             for (Object item: i.keySet()) {
 //                System.out.println("key : " + item);
@@ -52,20 +53,43 @@ public class jsonMultLinesTest {
                 i.replace(item, termFrequency);
 //                System.out.println("keyset:" + item + "\n tF: " + i.get(item));
             }
-
         }
 
-        // Debug: Print out the HashSet
-        for (HashMap i : listOfKeywords) {
-            for (Object item: i.keySet()) {
-                System.out.println("Keyset: " + item + "\n Keyset TF: " + i.get(item));
-            }
-        }
+//        // Debug: Print out the HashSet
+//        for (HashMap i : listOfKeywords) {
+//            for (Object item: i.keySet()) {
+//                System.out.println("Keyset: " + item + "\n Keyset TF: " + i.get(item));
+//            }
+//        }
 
         //idf
-        
+        int numOfDocuments = listOfKeywords.size();
+        HashMap<String, Double> wordFrequency = new HashMap<>();
+        HashMap<String, Boolean> wordEncountered = new HashMap<>(); // Keep track of words encountered in each document
 
+        for (HashMap i : listOfKeywords) {
+            wordEncountered.clear();
+            for (Object item: i.keySet()) {
+                if (wordFrequency.containsKey(item)) {
+                    if (!wordEncountered.containsKey(item)) {
+                        wordFrequency.put(String.valueOf(item), wordFrequency.get(item) + 1);
+                        wordEncountered.put(String.valueOf(item), true);
+                    }
+                } else {
+                    wordFrequency.put(String.valueOf(item), 1.0);
+                }
+            }
+        }
+//         Debug: Print HashMap
+        for (String i : wordFrequency.keySet()) {
+            System.out.println(i);
+            System.out.println(wordFrequency.get(i));
+        }
+
+        //n is the number of documents that contain the term t among the data set.
+//        double idf = Math.log(numOfDocuments)/
     }
+
 
     public static HashMap frequencyTable(String[] sortedCategories) {
         HashMap<String, Integer> map = new HashMap<>();
