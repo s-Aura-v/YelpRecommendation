@@ -35,6 +35,7 @@ public class TF_IDF {
                 termFrequency.add(frequencyTable(String.valueOf(objects[x].get("categories")).split("\\P{Alnum}+")));
             }
         }
+        ArrayList<HashMap<String, Double>> listOfKeywords = termFrequency;
 //        for (HashMap<String, Double> map : listOfKeywords) {
 //            System.out.println("Map: " + map);
 //        }
@@ -47,8 +48,7 @@ public class TF_IDF {
             }
             sumOfDoc[i] = sum;
         }
-        // TF - Complete
-        ArrayList<HashMap<String, Double>> listOfKeywords = termFrequency;
+        // TF - Complete (Term Frequency contains IDF)
         for (int i = 0; i < termFrequency.size(); i++) {
             for (String item : termFrequency.get(i).keySet()) {
                 double doubleValues = termFrequency.get(i).get(item);
@@ -56,9 +56,28 @@ public class TF_IDF {
                 termFrequency.get(i).replace(item, termFreqCalc);
             }
         }
-        for (HashMap l : termFrequency) {
-            System.out.println(l);
+//        for (HashMap l : termFrequency) {
+//            System.out.println(l);
+//        }
+
+
+        // IDF = idf(t,D) = log (N/( n))
+        // N is the number of documents in the data set. = (size of ArrayList)
+        // n is the number of documents that contain the term t among the data set.
+        // It will appear once because its a hash map
+        HashMap<String, Integer> idfMap = new HashMap<>();
+        for (HashMap<String, Double> map : listOfKeywords) {
+            for (String item : map.keySet()) {
+                if (idfMap.containsKey(item)) {
+                    idfMap.put(item, idfMap.get(item) + 1);
+                } else {
+                    idfMap.put(item, 1);
+                }
+            }
         }
+
+
+
 
     }
 
