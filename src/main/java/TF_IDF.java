@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 public class TF_IDF {
 
@@ -35,7 +36,7 @@ public class TF_IDF {
                 termFrequency.add(frequencyTable(String.valueOf(objects[x].get("categories")).split("\\P{Alnum}+")));
             }
         }
-        ArrayList<HashMap<String, Double>> listOfKeywords = termFrequency;
+//        ArrayList<HashMap<String, Double>> listOfKeywords = termFrequency;
 //        for (HashMap<String, Double> map : listOfKeywords) {
 //            System.out.println("Map: " + map);
 //        }
@@ -60,25 +61,40 @@ public class TF_IDF {
 //            System.out.println(l);
 //        }
 
-
         // IDF = idf(t,D) = log (N/( n))
         // N is the number of documents in the data set. = (size of ArrayList)
         // n is the number of documents that contain the term t among the data set.
-        // It will appear once because its a hash map
-        HashMap<String, Integer> idfMap = new HashMap<>();
-        for (HashMap<String, Double> map : listOfKeywords) {
+        HashMap<String, Integer> wordFrequencyInDoc = new HashMap<>();
+        for (HashMap<String, Double> map : termFrequency) {
             for (String item : map.keySet()) {
-                if (idfMap.containsKey(item)) {
-                    idfMap.put(item, idfMap.get(item) + 1);
+                if (wordFrequencyInDoc.containsKey(item)) {
+                    wordFrequencyInDoc.put(item, wordFrequencyInDoc.get(item) + 1);
                 } else {
-                    idfMap.put(item, 1);
+                    wordFrequencyInDoc.put(item, 1);
                 }
             }
         }
 
+        //Calculating IDF
+        HashMap<String, Double> idfMap = new HashMap<>();
+        for (HashMap<String, Double> map : termFrequency) {
+            for (String item : map.keySet()) {
+                double idfValue = Math.log(termFrequency.size() / (double) wordFrequencyInDoc.get(item));
+                idfMap.put(item, idfValue);
+//                System.out.println("word: " + item + "     idfMap: " + wordFrequencyInDoc.get(item) + "     idfValue: " + idfValue);
+            }
+        }
 
+        //TF-IDF
+        HashMap<String, Double> tfIDF = new HashMap<>();
+        for (HashMap<String, Double> tfMap : termFrequency) {
+            for (String term : tfMap.keySet()) {
+                double tfidfValue = tfMap.get(term) * idfMap.get(term);
+                tfIDF.put(term, tfidfValue);
+            }
+        }
 
-
+        System.out.println(tfIDF);
     }
 
     public static HashMap<String, Double> frequencyTable(String[] sortedCategories) {
