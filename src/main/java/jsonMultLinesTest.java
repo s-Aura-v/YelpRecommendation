@@ -13,7 +13,7 @@ public class jsonMultLinesTest {
         JsonObject[] objects = new JsonObject[10001];
         int index = 0;
         try {
-            buffRead = new BufferedReader(new FileReader("/Users/survive/Desktop/EEATO/24Spring/CSC365/FebProjectFiles/yelp_dataset/yelp_academic_dataset_business.json"));
+            buffRead = new BufferedReader(new FileReader("/Users/survive/Desktop/EEATO/24Spring/CSC365/FebProjectFiles/yelp_dataset/test.json"));
             while (index < objects.length) {
                 String line = buffRead.readLine();
                 objects[index] = gson.fromJson(line, JsonObject.class);
@@ -43,6 +43,7 @@ public class jsonMultLinesTest {
 
         //Finding TF-Dif
         ArrayList<HashMap<String,Double>> listOfKeywordsBackup = listOfKeywords;
+
         for (HashMap i : listOfKeywords) {
             for (Object item: i.keySet()) {
 //                System.out.println("key : " + item);
@@ -62,31 +63,33 @@ public class jsonMultLinesTest {
 //            }
 //        }
 
-        //idf
+        //idf-finding lowercase-n (Word frequency)
         int numOfDocuments = listOfKeywords.size();
         HashMap<String, Double> wordFrequency = new HashMap<>();
-        HashMap<String, Boolean> wordEncountered = new HashMap<>(); // Keep track of words encountered in each document
 
         for (HashMap i : listOfKeywords) {
-            wordEncountered.clear();
             for (Object item: i.keySet()) {
                 if (wordFrequency.containsKey(item)) {
-                    if (!wordEncountered.containsKey(item)) {
                         wordFrequency.put(String.valueOf(item), wordFrequency.get(item) + 1);
-                        wordEncountered.put(String.valueOf(item), true);
-                    }
-                } else {
+                    } else {
                     wordFrequency.put(String.valueOf(item), 1.0);
                 }
             }
         }
-//         Debug: Print HashMap
-        for (String i : wordFrequency.keySet()) {
-            System.out.println(i);
-            System.out.println(wordFrequency.get(i));
-        }
 
-        //n is the number of documents that contain the term t among the data set.
+////         Debug: Print HashMap
+//        for (String i : wordFrequency.keySet()) {
+//            System.out.println(i);
+//            System.out.println(wordFrequency.get(i));
+//        }
+
+//        n is the number of documents that contain the term t among the data set.
+
+        for (String keyword : wordFrequency.keySet()) {
+            double idf = (Math.log(numOfDocuments))/(wordFrequency.get(keyword));
+
+//            System.out.println("word:" + keyword + " AND wordFrequency(n): " + wordFrequency.get(keyword) + "\n idf:" + idf);
+        }
 //        double idf = Math.log(numOfDocuments)/
     }
 
