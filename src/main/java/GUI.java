@@ -6,6 +6,7 @@ import java.util.jar.JarEntry;
 public class GUI {
     private JFrame frame;
     private JButton submitButton;
+    private JButton closeButton;
     private JPanel container;
     private JPanel top;
     private JPanel results;
@@ -36,6 +37,7 @@ public class GUI {
         text2 = new JLabel("Second Recommendation");
 
         submitButton = new JButton("Submit");
+        closeButton = new JButton("Close");
         info = new JLabel("Enter something and we'll give you some recommendations!");
         reccs = new JLabel("Here are some recommendations!");
         input = new JTextField(15);
@@ -49,6 +51,7 @@ public class GUI {
         top.add(info);
         top.add(input);
         top.add(submitButton);
+        top.add(closeButton);
 
         results.setBackground(Color.blue);
 
@@ -75,6 +78,20 @@ public class GUI {
             }
         };
         submitButton.addActionListener(submitRequest);
+    }
+
+    public String getStoredInput() {
+        return storedInput;
+    }
+
+    public void setCloseButton() {
+        ActionListener closeGUI = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                frame.setVisible(false);
+            }
+        };
+        closeButton.addActionListener(closeGUI);
     }
 }
 

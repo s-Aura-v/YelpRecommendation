@@ -1,56 +1,50 @@
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+
+import javax.swing.*;
+import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.lang.reflect.Type;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.google.gson.reflect.TypeToken;
+import java.io.IOException;
 
 public class YelpRecs {
 
-    public static void main(String args[]) throws FileNotFoundException {
-        GUI one = new GUI(500,400);
-//        one.setUpGUI();
-//        one.storeString();
+    public static void main(String args[]) {
+        //Setup
+        GUI recommendation = new GUI(500,400);
+        recommendation.setUpGUI();
+        recommendation.storeString();
+        recommendation.setCloseButton();
 
-        JsonParser parser = new JsonParser();
-        FileReader reader = new FileReader("/Users/survive/Desktop/EEATO/24Spring/CSC365/FebProjectFiles/yelp_dataset/test.json");
+        Gson gson = new Gson();
+        BufferedReader buffRead;
+        JsonObject[] document = new JsonObject[10001];
+        int index = 0;
+        try {
+            buffRead = new BufferedReader(new FileReader("/Users/survive/Desktop/EEATO/24Spring/CSC365/FebProjectFiles/yelp_dataset/test.json"));
+            while (index < document.length) {
+                String line = buffRead.readLine();
+                document[index] = gson.fromJson(line, JsonObject.class);
+                index++;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-        Object obj = parser.parse(reader);
-        System.out.println("Test" + obj);
-        JsonObject jsonObj = (JsonObject) obj;
-        String name = String.valueOf(jsonObj.get("categories"));
-        System.out.println(name);
-
-//        Type type = new TypeToken<Map<String, String>>(){}.getType();
-//        Map<String, String> myMap = parser.f ("{'k1':'apple','k2':'orange'}", type);
-
-        //https://stackoverflow.com/questions/22011200/creating-hashmap-from-a-json-string
-
-
-
-//        HashMap data = new HashMap();
-
+        TF_IDF_Class frequency = new TF_IDF_Class(document);
 
 
-//    // Serialization
-//        Gson gson = new Gson();
-//        gson.toJson(1);            // ==> 1
-//        gson.toJson("abcd");       // ==> "abcd"
-//        gson.toJson(new Long(10)); // ==> 10
-//        int[] values = { 1 };
-//        gson.toJson(values);       // ==> [1]
-//
-//    // Deserialization
-//        int i = gson.fromJson("1", int.class);
-//        Integer intObj = gson.fromJson("1", Integer.class);
-//        Long longObj = gson.fromJson("1", Long.class);
-//        Boolean boolObj = gson.fromJson("false", Boolean.class);
-//        String str = gson.fromJson("\"abc\"", String.class);
-//        String[] strArray = gson.fromJson("[\"abc\"]", String[].class);
+        String userInput = JOptionPane.showInputDialog("Please enter ...");
+
+        JsonElement element = gson.fromJson (userInput, JsonElement.class);
+        JsonObject jsonObj = element.getAsJsonObject();
+        System.out.println("printpls" + jsonObj);
+
+//        TF_IDF_Class requestMap = new TF_IDF_Class(request);
+//        System.out.println(frequency.createTFIDFMap());
+
+
+
     }
 }

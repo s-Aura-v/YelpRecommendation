@@ -1,40 +1,30 @@
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class TF_IDF {
+public class TF_IDF_Class {
+    private final JsonObject[] document;
+    private HashMap<String, Integer> frequencyTable;
+    private HashMap<String, Double> tfdifMap;
 
-    public static void main(String[] args) {
-        // Created JsonObject, objects, that holds the input data.
-        Gson gson = new Gson();
-        BufferedReader buffRead;
-        JsonObject[] objects = new JsonObject[10001];
-        int index = 0;
-        try {
-            buffRead = new BufferedReader(new FileReader("/Users/survive/Desktop/EEATO/24Spring/CSC365/FebProjectFiles/yelp_dataset/test.json"));
-            while (index < objects.length) {
-                String line = buffRead.readLine();
-                objects[index] = gson.fromJson(line, JsonObject.class);
-                index++;
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public TF_IDF_Class(JsonObject[] document) {
+        this.document = document;
+        this.tfdifMap = new HashMap<String, Double>();
+    }
+
+    public HashMap<String,Double> createTFIDFMap() {
         // ArrayList of a HashMap, listOfKeywords, that holds the keywords.
         // IDF = n/N
         // N = sumOfDoc
         // n = Hashset's value (.get(keyword))
         ArrayList<HashMap<String, Double>> termFrequency = new ArrayList<>();
-        for (int x = 0; x < objects.length; x++) {
-            if (objects[x] != null) {
-                termFrequency.add(frequencyTable(String.valueOf(objects[x].get("categories")).split("\\P{Alnum}+")));
+        for (int x = 0; x < document.length; x++) {
+            if (document[x] != null) {
+                termFrequency.add(frequencyTable(String.valueOf(document[x].get("categories")).split("\\P{Alnum}+")));
             }
         }
+//        this.frequencyTable = termFrequency;
 //        ArrayList<HashMap<String, Double>> listOfKeywords = termFrequency;
 //        for (HashMap<String, Double> map : listOfKeywords) {
 //            System.out.println("Map: " + map);
@@ -85,19 +75,18 @@ public class TF_IDF {
         }
 
         //TF-IDF
-        HashMap<String, Double> tfIDF = new HashMap<>();
         for (HashMap<String, Double> tfMap : termFrequency) {
             for (String term : tfMap.keySet()) {
                 double tfidfValue = tfMap.get(term) * idfMap.get(term);
-                tfIDF.put(term, tfidfValue);
+                tfdifMap.put(term, tfidfValue);
             }
         }
 
-        System.out.println(tfIDF);
-//        return tfIDF;
+        System.out.println(tfdifMap);
+        return tfdifMap;
     }
 
-    public static HashMap<String, Double> frequencyTable(String[] sortedCategories) {
+    private static HashMap<String, Double> frequencyTable(String[] sortedCategories) {
         HashMap<String, Double> map = new HashMap<>();
         for (int i = 0; i < sortedCategories.length; i++) {
             if (map.containsKey(sortedCategories[i])) {
@@ -108,5 +97,5 @@ public class TF_IDF {
         }
         return map;
     }
-}
 
+}
