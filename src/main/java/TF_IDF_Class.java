@@ -86,7 +86,20 @@ public class TF_IDF_Class {
         return tfdifMap;
     }
 
-    private static HashMap<String, Double> frequencyTable(String[] sortedCategories) {
+    public void compareTFIDF(String userInput) {
+        String champion = "";
+        String challenger = "";
+//        for (HashMap<String, Double> map : tfdifMap) {
+//            for (String term : tfdifMap.keySet()) {
+//
+//
+//
+//            }
+//        }
+    }
+
+
+        private static HashMap<String, Double> frequencyTable(String[] sortedCategories) {
         HashMap<String, Double> map = new HashMap<>();
         for (int i = 0; i < sortedCategories.length; i++) {
             if (map.containsKey(sortedCategories[i])) {

@@ -16,7 +16,7 @@ public class TF_IDF {
         JsonObject[] objects = new JsonObject[10001];
         int index = 0;
         try {
-            buffRead = new BufferedReader(new FileReader("/Users/survive/Desktop/EEATO/24Spring/CSC365/FebProjectFiles/yelp_dataset/test.json"));
+            buffRead = new BufferedReader(new FileReader("/Users/survive/Desktop/EEATO/24Spring/CSC365/FebProjectFiles/yelp_dataset/reviewTEST.json"));
             while (index < objects.length) {
                 String line = buffRead.readLine();
                 objects[index] = gson.fromJson(line, JsonObject.class);
@@ -32,12 +32,14 @@ public class TF_IDF {
         ArrayList<HashMap<String, Double>> termFrequency = new ArrayList<>();
         for (int x = 0; x < objects.length; x++) {
             if (objects[x] != null) {
-                termFrequency.add(frequencyTable(String.valueOf(objects[x].get("categories")).split("\\P{Alnum}+")));
+                termFrequency.add(frequencyTable(String.valueOf(objects[x].get("text")).split("\\P{Alnum}+")));
             }
         }
 //        ArrayList<HashMap<String, Double>> listOfKeywords = termFrequency;
 //        for (HashMap<String, Double> map : listOfKeywords) {
-//            System.out.println("Map: " + map);
+//            for (String item : map.keySet()) {
+//                System.out.println(item);
+//            }
 //        }
         // N = sumOfDOc
         int[] sumOfDoc = new int[termFrequency.size()];
@@ -83,6 +85,7 @@ public class TF_IDF {
 //                System.out.println("word: " + item + "     idfMap: " + wordFrequencyInDoc.get(item) + "     idfValue: " + idfValue);
             }
         }
+//        System.out.println(idfMap);
 
         //TF-IDF
         HashMap<String, Double> tfIDF = new HashMap<>();
@@ -94,7 +97,29 @@ public class TF_IDF {
         }
 
         System.out.println(tfIDF);
+
+        computeTFDIFFromString("fuck me man, this is troubling, fuck, fuck");
 //        return tfIDF;
+    }
+
+    public static HashMap<String, Double> computeTFDIFFromString(String userInput) {
+        // 1. Find term frequency for TFDIF String
+        String[] wordsArray = userInput.split("\\P{Alnum}+");
+        HashMap<String, Double> inputFrequency = frequencyTable(wordsArray);
+//        System.out.println(inputFrequency);
+
+        //2. Get size of sentence
+        int sizeN = wordsArray.length;
+        System.out.println("Size: " + sizeN);
+
+        //3. Term Frequency: (word frequency)/(total numbers)
+        for (String item : inputFrequency.keySet()) {
+            double termFreq = (double) inputFrequency.get(item) / sizeN;
+            inputFrequency.replace(item, termFreq);
+        }
+
+        //4. IDF = It's only 1 document so IDF is pointless
+        return inputFrequency;
     }
 
     public static HashMap<String, Double> frequencyTable(String[] sortedCategories) {
