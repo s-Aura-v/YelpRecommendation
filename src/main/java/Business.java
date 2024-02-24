@@ -2,11 +2,17 @@ public class Business {
     private String name;
     private String review;
     private String id;
-
+    private HT termFrequency;
     public Business(String name, String id) {
         this.name = name;
         this.id = id;
+        termFrequency = new HT();
     }
+
+    public void setTermFrequency(HT termFrequency) {
+        this.termFrequency.copyHT(termFrequency);
+    }
+
     public void setName(String name) {
         this.name = name;
     }

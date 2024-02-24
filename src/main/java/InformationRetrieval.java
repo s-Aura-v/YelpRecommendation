@@ -68,8 +68,22 @@ public class InformationRetrieval {
                 }
             }
         }
-        System.out.println(frequencyTable);
+        frequencyTable.printAll();
 
+        //4. Term Frequency
+        for (Business business : mapOfBusiness.values()) {
+            HT termFrequencyInDoc = new HT();
+            for (String word : business.getReview().split("\\s+")) {
+                if (termFrequencyInDoc.contains(word)) {
+                    termFrequencyInDoc.setCount(word, frequencyTable.getCount(word)+1);
+                } else {
+                    frequencyTable.add(word, 1);
+                }
+            }
+            business.setTermFrequency(termFrequencyInDoc);
+        }
+
+        System.out.println(mapOfBusiness);
 
 
 

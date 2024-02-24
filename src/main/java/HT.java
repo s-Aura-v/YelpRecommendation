@@ -35,6 +35,14 @@ class HT implements java.io.Serializable {
                 e.count = count;
         }
     }
+    void copyHT(HT hashtable) {
+        for (Node node : hashtable.table) {
+            while (node != null) {
+                this.add(node.key, node.count);
+                node = node.next;
+            }
+        }
+    }
 //    Object getKey(Object key) {
 //        int h = key.hashCode();
 //        int i = h & (table.length - 1);
@@ -107,7 +115,7 @@ class HT implements java.io.Serializable {
     void printAll() {
         for (int i = 0; i < table.length; ++i)
             for (Node e = table[i]; e != null; e = e.next)
-                System.out.println(e.key);
+                System.out.printf("%-20s %s%n", "Key: " + e.key, "Count: " + e.count);
     }
     private void writeObject(ObjectOutputStream s) throws Exception {
         s.defaultWriteObject();
