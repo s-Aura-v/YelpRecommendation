@@ -10,6 +10,7 @@ public class InformationRetrieval {
     public static void main(String[] args) {
         // Take in Business ID and return Business
         HashMap<String, Business> mapOfBusiness = new HashMap<>();
+        HT frequencyTable = new HT();
 
         Gson gson = new Gson();
         BufferedReader buffRead;
@@ -57,11 +58,19 @@ public class InformationRetrieval {
             mapOfBusiness.get(id).setReview(review);
         }
 
-//        System.out.println(hashtable.get("Business@924"));
-//        System.out.println(hashtable);
+        //3. Fill frequency table
+        for (Business business : mapOfBusiness.values()) {
+            for (String word : business.getReview().split("\\s+")) {
+                if (frequencyTable.contains(word)) {
+                    frequencyTable.setCount(word, frequencyTable.getCount(word)+1);
+                } else {
+                    frequencyTable.add(word, 1);
+                }
+            }
+        }
+        System.out.println(frequencyTable);
 
 
-        // 2. Get Business review and add it to the correct class
 
 
     }

@@ -3,9 +3,9 @@ class HT implements java.io.Serializable {
     static final class Node {
         Object key;
         Node next;
-        // int count;
-        // Object value;
-        Node(Object k, Node n) { key = k; next = n; }
+        int count;
+//         Object value;
+        Node(Object k, int c, Node n) { key = k; count = c; next = n; }
     }
     Node[] table = new Node[8]; // always a power of 2
     int size = 0;
@@ -18,23 +18,40 @@ class HT implements java.io.Serializable {
         }
         return false;
     }
-    Object get(Object key) {
+    int getCount(Object key) {
         int h = key.hashCode();
         int i = h & (table.length - 1);
         for (Node e = table[i]; e != null; e = e.next) {
             if (key.equals(e.key))
-                return e.key;
+                return e.count;
         }
-        return false;
+        return 0;
     }
-    void add(Object key) {
+    void setCount(Object key, int count) {
+        int h = key.hashCode();
+        int i = h & (table.length - 1);
+        for (Node e = table[i]; e != null; e = e.next) {
+            if (key.equals(e.key))
+                e.count = count;
+        }
+    }
+//    Object getKey(Object key) {
+//        int h = key.hashCode();
+//        int i = h & (table.length - 1);
+//        for (Node e = table[i]; e != null; e = e.next) {
+//            if (key.equals(e.key))
+//                return e.value;
+//        }
+//        return false;
+//    }
+    void add(Object key, int count) {
         int h = key.hashCode();
         int i = h & (table.length - 1);
         for (Node e = table[i]; e != null; e = e.next) {
             if (key.equals(e.key))
                 return;
         }
-        table[i] = new Node(key, table[i]);
+        table[i] = new Node(key, count, table[i]);
         ++size;
         if ((float)size/table.length >= 0.75f)
             resize();
@@ -48,7 +65,7 @@ class HT implements java.io.Serializable {
             for (Node e = oldTable[i]; e != null; e = e.next) {
                 int h = e.key.hashCode();
                 int j = h & (newTable.length - 1);
-                newTable[j] = new Node(e.key, newTable[j]);
+                newTable[j] = new Node(e.key, e.count, newTable[j]);
             }
         }
         table = newTable;
@@ -105,6 +122,6 @@ class HT implements java.io.Serializable {
         s.defaultReadObject();
         int n = s.readInt();
         for (int i = 0; i < n; ++i)
-            add(s.readObject());
+            add(s.readObject(), s.readInt());
     }
 }
