@@ -18,6 +18,15 @@ class HT implements java.io.Serializable {
         }
         return false;
     }
+    Object get(Object key) {
+        int h = key.hashCode();
+        int i = h & (table.length - 1);
+        for (Node e = table[i]; e != null; e = e.next) {
+            if (key.equals(e.key))
+                return e.key;
+        }
+        return false;
+    }
     void add(Object key) {
         int h = key.hashCode();
         int i = h & (table.length - 1);
