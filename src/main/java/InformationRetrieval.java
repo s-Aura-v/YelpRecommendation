@@ -121,7 +121,22 @@ public class InformationRetrieval {
             double idf = Math.log10( documentSize / (double) count);
             idfValues.put(businessName,idf);
         }
-        
+
+        //6. TF-IDF : tf * idf
+        HashMap<String, Double> tfIDFValues = new HashMap<>();
+        for (Business business : mapOfBusiness.values()) {
+            for (String word : business.getTermFrequency().keySet()) {
+                double idf = idfValues.get(word);
+                double tf = business.getTermFrequency().get(word);
+                double tfIDF = tf * idf;
+                business.addToTfIDF(word, tfIDF);
+            }
+        }
+        // Debug: Print Map
+        for (Business business : mapOfBusiness.values()) {
+            System.out.println(business.getTfIDF());
+        }
+
 
 
 

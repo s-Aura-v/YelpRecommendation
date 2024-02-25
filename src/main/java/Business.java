@@ -6,12 +6,13 @@ public class Business {
     private String id;
     private HT termCount;
     private HashMap<String, Double> termFrequency;
-    private HashMap<String, Double> inverseDocumentFrequency;
+    private HashMap<String, Double> tfIDF;
 
     public Business(String name, String id) {
         this.name = name;
         this.id = id;
         termCount = new HT();
+        tfIDF = new HashMap<>();
     }
 
     public void setTermCount(HT termFrequency) {
@@ -31,14 +32,18 @@ public class Business {
     public void setTermFrequency(HashMap<String, Double> frequencyForWords) {
         this.termFrequency = frequencyForWords;
     }
-    public HashMap<String, Double> getTermFrequency() {
-        return termFrequency;
-    }
-
     public void setReview(String review) {
         this.review = review;
     }
-
+    public void addToTfIDF(String word, double tfIDFValue) {
+        this.tfIDF.put(word, tfIDFValue);
+    }
+    public HashMap<String, Double> getTfIDF() {
+        return tfIDF;
+    }
+    public HashMap<String, Double> getTermFrequency() {
+        return termFrequency;
+    }
     public String getId() {
         return id;
     }
