@@ -1,5 +1,9 @@
 import java.io.*;
-class HT implements java.io.Serializable {
+import java.util.Iterator;
+import java.util.Spliterator;
+import java.util.function.Consumer;
+
+class HT implements java.io.Serializable{
     static final class Node {
         Object key;
         Node next;

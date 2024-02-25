@@ -17,7 +17,7 @@ public class InformationRetrieval {
         JsonObject[] businessData = new JsonObject[4];
         JsonObject[] businessReview = new JsonObject[4];
 
-        System.out.println(System.getProperty("user.dir"));
+//        System.out.println(System.getProperty("user.dir"));
         // 1. Get business name/id
         int index = 0;
         try {
@@ -60,7 +60,7 @@ public class InformationRetrieval {
 
         //3. Fill frequency table
         for (Business business : mapOfBusiness.values()) {
-            for (String word : business.getReview().split("\\s+")) {
+            for (String word : business.getReview().split("\\P{Alnum}+")) {
                 if (frequencyTable.contains(word)) {
                     frequencyTable.setCount(word, frequencyTable.getCount(word)+1);
                 } else {
@@ -70,24 +70,50 @@ public class InformationRetrieval {
         }
         frequencyTable.printAll();
 
-        //4. Term Frequency
+//        4. Term Frequency (Version 1)
+//        for (Business business : mapOfBusiness.values()) {
+//            HT termFrequencyInDoc = new HT();
+//            for (String word : business.getReview().split("\\s+")) {
+//                if (termFrequencyInDoc.contains(word)) {
+//                    termFrequencyInDoc.setCount(word, frequencyTable.getCount(word)+1);
+//                } else {
+//                    termFrequencyInDoc.add(word, 1);
+//                }
+//            }
+//            business.setTermFrequency(termFrequencyInDoc);
+//        }
+//        //Find term frequency ( term appeared / # of terms )
+//        for (Business business : mapOfBusiness.values()) {
+//        }
+
+
+        // 4. Term Frequency Version 2
         for (Business business : mapOfBusiness.values()) {
-            HT termFrequencyInDoc = new HT();
-            for (String word : business.getReview().split("\\s+")) {
-                if (termFrequencyInDoc.contains(word)) {
-                    termFrequencyInDoc.setCount(word, frequencyTable.getCount(word)+1);
+            HashMap<String, Integer> termFrequency = new HashMap<>();
+            HashMap<String, Double> termFrequencyTF = new HashMap<>();
+            for (String word : business.getReview().split("\\P{Alnum}+")) {
+                if (termFrequency.containsKey(word)) {
+                    termFrequency.put(word, termFrequency.get(word) + 1);
                 } else {
-                    frequencyTable.add(word, 1);
+                    termFrequency.put(word, 1);
                 }
             }
-            business.setTermFrequency(termFrequencyInDoc);
+
+            for (String word : termFrequency.keySet()) {
+                int term = termFrequency.get(word);
+                int size = termFrequency.size();
+                termFrequencyTF.put(word, (double) term/size);
+                business.setFrequencyForWords(termFrequencyTF);
+            }
         }
 
-        System.out.println(mapOfBusiness);
+        //5. Inverse-Document Frequency
+
 
 
 
     }
+
 
 
 
