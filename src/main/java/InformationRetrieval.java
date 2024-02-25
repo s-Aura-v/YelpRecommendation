@@ -7,9 +7,9 @@ import java.io.IOException;
 import java.util.*;
 
 public class InformationRetrieval {
+    static HashMap<String, Business> mapOfBusiness = new HashMap<>();
     public static void main(String[] args) {
         // Take in Business ID and return Business
-        HashMap<String, Business> mapOfBusiness = new HashMap<>();
         HT frequencyTable = new HT();
 
         Gson gson = new Gson();
@@ -123,7 +123,6 @@ public class InformationRetrieval {
         }
 
         //6. TF-IDF : tf * idf
-        HashMap<String, Double> tfIDFValues = new HashMap<>();
         for (Business business : mapOfBusiness.values()) {
             for (String word : business.getTermFrequency().keySet()) {
                 double idf = idfValues.get(word);
@@ -137,11 +136,16 @@ public class InformationRetrieval {
             System.out.println(business.getTfIDF());
         }
 
+    }
 
+    void cosineSimilarity(Business userInput) {
+        // Cosine Similarity = (vector a * vector b) / sqrt(vectorA^2) sqrt(vectorB^2)
+        Business champion, runnerUp;
+        for (Business business : mapOfBusiness.values()) {
+            double vectorA;
+            double vectorB;
 
-
-
-
+        }
     }
 
 
