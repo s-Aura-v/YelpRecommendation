@@ -4,8 +4,7 @@ import com.google.gson.JsonObject;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Iterator;
+import java.util.*;
 
 public class InformationRetrieval {
     public static void main(String[] args) {
@@ -61,16 +60,39 @@ public class InformationRetrieval {
 
         //3. Total Document Frequency Table
         // This is how many times the word appears throughout the entire document
+//        for (Business business : mapOfBusiness.values()) {
+//            for (String word : business.getReview().split("\\P{Alnum}+")) {
+//                if (frequencyTable.contains(word)) {
+//                    frequencyTable.setCount(word, frequencyTable.getCount(word)+1);
+//                } else {
+//                    frequencyTable.add(word, 1);
+//                }
+//            }
+//        }
+
+        //3b. Trying to only look at unique values
         for (Business business : mapOfBusiness.values()) {
-            for (String word : business.getReview().split("\\P{Alnum}+")) {
+            Set<String> uniqueWords = new HashSet<>(List.of(business.getReview().split("\\P{Alnum}+")));
+            for (String word : uniqueWords) {
                 if (frequencyTable.contains(word)) {
-                    frequencyTable.setCount(word, frequencyTable.getCount(word)+1);
+                    frequencyTable.setCount(word, frequencyTable.getCount(word) + 1);
                 } else {
                     frequencyTable.add(word, 1);
                 }
             }
         }
         frequencyTable.printAll();
+
+//            for (String word : business.getReview().split("\\P{Alnum}+")) {
+//                if (frequencyTable.contains(word)) {
+//                    frequencyTable.setCount(word, frequencyTable.getCount(word)+1);
+//                } else {
+//                    frequencyTable.add(word, 1);
+//                }
+//            }
+//        }
+
+
 
 //        for (Object x : frequencyTable) {
 //            String name = (String) x;
@@ -81,7 +103,7 @@ public class InformationRetrieval {
 //            System.out.println(x);
 //        }
 
-        
+
 //        4. Term Frequency (Version 1)
 //        for (Business business : mapOfBusiness.values()) {
 //            HT termFrequencyInDoc = new HT();
