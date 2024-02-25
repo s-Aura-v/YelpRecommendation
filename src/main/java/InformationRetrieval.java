@@ -5,6 +5,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Iterator;
 
 public class InformationRetrieval {
     public static void main(String[] args) {
@@ -58,7 +59,8 @@ public class InformationRetrieval {
             mapOfBusiness.get(id).setReview(review);
         }
 
-        //3. Fill frequency table
+        //3. Total Document Frequency Table
+        // This is how many times the word appears throughout the entire document
         for (Business business : mapOfBusiness.values()) {
             for (String word : business.getReview().split("\\P{Alnum}+")) {
                 if (frequencyTable.contains(word)) {
@@ -70,6 +72,16 @@ public class InformationRetrieval {
         }
         frequencyTable.printAll();
 
+//        for (Object x : frequencyTable) {
+//            String name = (String) x;
+//            System.out.println(x);
+//        }
+//        for (Iterator<Integer> it = frequencyTable.countIterator(); it.hasNext(); ) {
+//            Integer x = it.next();
+//            System.out.println(x);
+//        }
+
+        
 //        4. Term Frequency (Version 1)
 //        for (Business business : mapOfBusiness.values()) {
 //            HT termFrequencyInDoc = new HT();
@@ -103,11 +115,13 @@ public class InformationRetrieval {
                 int term = termFrequency.get(word);
                 int size = termFrequency.size();
                 termFrequencyTF.put(word, (double) term/size);
-                business.setFrequencyForWords(termFrequencyTF);
+                business.setTermFrequency(termFrequencyTF);
             }
         }
 
         //5. Inverse-Document Frequency
+        int size = frequencyTable.size;
+
 
 
 

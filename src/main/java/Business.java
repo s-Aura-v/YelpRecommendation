@@ -4,21 +4,22 @@ public class Business {
     private String name;
     private String review;
     private String id;
-    private HT termFrequency;
-    private HashMap<String, Double> frequencyForWords;
+    private HT termCount;
+    private HashMap<String, Double> termFrequency;
+    private HashMap<String, Double> inverseDocumentFrequency;
 
     public Business(String name, String id) {
         this.name = name;
         this.id = id;
-        termFrequency = new HT();
+        termCount = new HT();
     }
 
-    public void setTermFrequency(HT termFrequency) {
-        this.termFrequency.copyHT(termFrequency);
+    public void setTermCount(HT termFrequency) {
+        this.termCount.copyHT(termFrequency);
     }
 
-    public HT getTermFrequency() {
-        return termFrequency;
+    public HT getTermCount() {
+        return termCount;
     }
 
     public void setName(String name) {
@@ -27,11 +28,11 @@ public class Business {
     public void setId(String id) {
         this.id = id;
     }
-    public void setFrequencyForWords(HashMap<String, Double> frequencyForWords) {
-        this.frequencyForWords = frequencyForWords;
+    public void setTermFrequency(HashMap<String, Double> frequencyForWords) {
+        this.termFrequency = frequencyForWords;
     }
-    public HashMap<String, Double> getFrequencyForWords() {
-        return frequencyForWords;
+    public HashMap<String, Double> getTermFrequency() {
+        return termFrequency;
     }
 
     public void setReview(String review) {

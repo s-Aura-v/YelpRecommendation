@@ -3,7 +3,8 @@ import java.util.Iterator;
 import java.util.Spliterator;
 import java.util.function.Consumer;
 
-class HT implements java.io.Serializable{
+class HT implements java.io.Serializable, Iterable<Object>{
+
     static final class Node {
         Object key;
         Node next;
@@ -136,4 +137,62 @@ class HT implements java.io.Serializable{
         for (int i = 0; i < n; ++i)
             add(s.readObject(), s.readInt());
     }
+
+    @Override
+    public Iterator<Object> iterator() {
+        return new KeyIterator();
+    }
+
+    public Iterator<Integer> countIterator() {
+        return new CountIterator();
+    }
+
+
+    private class KeyIterator implements Iterator<Object> {
+        int currentIndex = 0;
+        Node currentNode = table[0];
+
+        @Override
+        public boolean hasNext() {
+            while (currentIndex < table.length && currentNode == null) {
+                currentNode = table[currentIndex++];
+            }
+            return currentNode != null;
+        }
+
+        @Override
+        public Object next() {
+            Object key = currentNode.key;
+            currentNode = currentNode.next;
+            if (currentNode == null && currentIndex < table.length) {
+                currentNode = table[currentIndex++];
+            }
+            return key;
+        }
+    }
+
+    private class CountIterator implements Iterator<Integer> {
+        int currentIndex = 0;
+        Node currentNode = table[0];
+
+        @Override
+        public boolean hasNext() {
+            while (currentIndex < table.length && currentNode == null) {
+                currentNode = table[currentIndex++];
+            }
+            return currentNode != null;
+        }
+
+        @Override
+        public Integer next() {
+            int count = currentNode.count;
+            currentNode = currentNode.next;
+            if (currentNode == null && currentIndex < table.length) {
+                currentNode = table[currentIndex++];
+            }
+            return count;
+        }
+    }
+
 }
+
