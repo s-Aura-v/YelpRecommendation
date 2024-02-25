@@ -18,14 +18,14 @@ public class InformationRetrieval {
         JsonObject[] businessReview = new JsonObject[4];
 
 //        System.out.println(System.getProperty("user.dir"));
-        // 1. Get business name/id
-        int index = 0;
+        // 1. Get business name/id and [number of documents (see step 5).]
+        int documentSize = 0;
         try {
             buffRead = new BufferedReader(new FileReader("src/main/java/jsonBusinessTest.json"));
-            while (index < businessData.length) {
+            while (documentSize < businessData.length) {
                 String line = buffRead.readLine();
-                businessData[index] = gson.fromJson(line, JsonObject.class);
-                index++;
+                businessData[documentSize] = gson.fromJson(line, JsonObject.class);
+                documentSize++;
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -40,13 +40,13 @@ public class InformationRetrieval {
         }
 
         // 2. Get business id/reviews
-        index = 0;
+        documentSize = 0;
         try {
             buffRead = new BufferedReader(new FileReader("src/main/java/jsonReviewTest.json"));
-            while (index < businessData.length) {
+            while (documentSize < businessData.length) {
                 String line = buffRead.readLine();
-                businessReview[index] = gson.fromJson(line, JsonObject.class);
-                index++;
+                businessReview[documentSize] = gson.fromJson(line, JsonObject.class);
+                documentSize++;
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -58,19 +58,8 @@ public class InformationRetrieval {
             mapOfBusiness.get(id).setReview(review);
         }
 
-        //3. Total Document Frequency Table
-        // This is how many times the word appears throughout the entire document
-//        for (Business business : mapOfBusiness.values()) {
-//            for (String word : business.getReview().split("\\P{Alnum}+")) {
-//                if (frequencyTable.contains(word)) {
-//                    frequencyTable.setCount(word, frequencyTable.getCount(word)+1);
-//                } else {
-//                    frequencyTable.add(word, 1);
-//                }
-//            }
-//        }
-
-        //3b. Trying to only look at unique values
+        //3b. Total Document Frequency Table
+        // This is how many documents contains the same word
         for (Business business : mapOfBusiness.values()) {
             Set<String> uniqueWords = new HashSet<>(List.of(business.getReview().split("\\P{Alnum}+")));
             for (String word : uniqueWords) {
@@ -81,27 +70,7 @@ public class InformationRetrieval {
                 }
             }
         }
-        frequencyTable.printAll();
-
-//            for (String word : business.getReview().split("\\P{Alnum}+")) {
-//                if (frequencyTable.contains(word)) {
-//                    frequencyTable.setCount(word, frequencyTable.getCount(word)+1);
-//                } else {
-//                    frequencyTable.add(word, 1);
-//                }
-//            }
-//        }
-
-
-
-//        for (Object x : frequencyTable) {
-//            String name = (String) x;
-//            System.out.println(x);
-//        }
-//        for (Iterator<Integer> it = frequencyTable.countIterator(); it.hasNext(); ) {
-//            Integer x = it.next();
-//            System.out.println(x);
-//        }
+//        frequencyTable.printAll();
 
 
 //        4. Term Frequency (Version 1)
@@ -142,7 +111,17 @@ public class InformationRetrieval {
         }
 
         //5. Inverse-Document Frequency
-        int size = frequencyTable.size;
+        // Log of (total Number of Documents [documentSize : see step 1] / documents with the term [frequencyTable.getCount(x)])
+        // Side note: I want to convert HashMap to HT, but I need to add a double constructor to HT
+//        HT idfValues = new HT();
+        HashMap<String, Double> idfValues = new HashMap<>();
+        for (Object x : frequencyTable) {
+            String businessName = (String) x;
+            int count = frequencyTable.getCount(x);
+            double idf = Math.log10( documentSize / (double) count);
+            idfValues.put(businessName,idf);
+        }
+        
 
 
 
@@ -151,6 +130,24 @@ public class InformationRetrieval {
     }
 
 
+
+
+
+
+
+
+    // Debug Code: Print out each key and count in a HT:
+    // None of this will work if you uncomment it, but I'm storing it for later use.
+    void debug() {
+//        for (Object x : frequencyTable) {
+//            String name = (String) x;
+//            System.out.println(x);
+//        }
+//        for (Iterator<Integer> it = frequencyTable.countIterator(); it.hasNext(); ) {
+//            Integer x = it.next();
+//            System.out.println(x);
+//        }
+    }
 
 
 }
