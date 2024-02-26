@@ -11,18 +11,23 @@ public class InformationRetrieval {
     static HT frequencyTable = new HT();
 
     public static void main(String[] args) {
-        // Take in Business ID and return Business
+        //GUI
+//        GUI projectOne = new GUI(400,400);
+//        projectOne.setUpGUI();
+//        projectOne.setCloseButton();
 
+
+        // Take in Business ID and return Business
         Gson gson = new Gson();
         BufferedReader buffRead;
-        JsonObject[] businessData = new JsonObject[4];
-        JsonObject[] businessReview = new JsonObject[4];
+        JsonObject[] businessData = new JsonObject[10000];
+        JsonObject[] businessReview = new JsonObject[10000];
 
 //        System.out.println(System.getProperty("user.dir"));
         // 1. Get business name/id and [number of documents (see step 5).]
         int documentSize = 0;
         try {
-            buffRead = new BufferedReader(new FileReader("src/main/java/jsonBusinessTest.json"));
+            buffRead = new BufferedReader(new FileReader("dataset/yelp_academic_dataset_business.json"));
             while (documentSize < businessData.length) {
                 String line = buffRead.readLine();
                 businessData[documentSize] = gson.fromJson(line, JsonObject.class);
@@ -33,17 +38,17 @@ public class InformationRetrieval {
         }
 
         for (int i = 0; i < businessData.length; i++) {
-            String name = String.join(" ", String.valueOf(businessData[i].get("name")).split("\\P{Alnum}+")).substring(1);
+            String name = String.join(" ", String.valueOf(businessData[i].get("name")).split("[^a-zA-Z0-9'&]+")).substring(1);
             //Note: Might need to implement the substring in a better way
             String id =  String.valueOf(businessData[i].get("business_id")).substring(1,23);
-            mapOfBusiness.put(id, new Business(name, id));
+                mapOfBusiness.put(id, new Business(name, id));
 //            System.out.println(id + " " + name);
         }
 
         // 2. Get business id/reviews
         documentSize = 0;
         try {
-            buffRead = new BufferedReader(new FileReader("src/main/java/jsonReviewTest.json"));
+            buffRead = new BufferedReader(new FileReader("dataset/yelp_academic_dataset_review.json"));
             while (documentSize < businessData.length) {
                 String line = buffRead.readLine();
                 businessReview[documentSize] = gson.fromJson(line, JsonObject.class);
@@ -55,7 +60,7 @@ public class InformationRetrieval {
 
         for (int i = 0; i < businessReview.length; i++) {
             String id = String.valueOf(businessReview[i].get("business_id")).substring(1,23);
-            String review = String.join(" ", String.valueOf(businessReview[i].get("text")).split("\\P{Alnum}+")).substring(1);
+            String review = String.join(" ", String.valueOf(businessReview[i].get("text")).split("[^a-zA-Z0-9'&]+")).substring(1);
             mapOfBusiness.get(id).setReview(review);
         }
 
@@ -132,73 +137,9 @@ public class InformationRetrieval {
                 business.addToTfIDF(word, tfIDF);
             }
         }
-        // Debug: Print Map
-//        for (Business business : mapOfBusiness.values()) {
-//            System.out.println(business.getTfIDF());
-//        }
-
         // Use ID
-        cosineSimilarity("Pns2l4eNsfO8kk83dixA6A");
-
+//        cosineSimilarity("Pns2l4eNsfO8kk83dixA6A");
     }
-
-//    static void cosineSimilarity(String businessName) {
-//        // Cosine Similarity = (vector a * vector b) / (sqrt(vectorA^2) sqrt(vectorB^2))
-//        Business userInput = mapOfBusiness.get(businessName);
-//
-////        HashMap<String, Double> similarityMetric = new HashMap<>();
-////        for (Object objectTerm : frequencyTable) {
-////            String databaseTerm = (String) objectTerm;
-////
-////        }
-//
-//        HashMap<String, Double> similarityMetric = new HashMap<>();
-//        for (Object objectTerm : frequencyTable) {
-//            String databaseTerm = (String) objectTerm;
-//            for (String userTerm : userInput.getTermFrequency().keySet()) {
-//                boolean foundWord = false;
-//                if (userTerm.equals(databaseTerm)) {
-//                    similarityMetric.put(userTerm, userInput.getTermFrequency().get(userTerm));
-//                    foundWord = true;
-//                } else {
-//                    similarityMetric.put(userTerm, 0.0);
-//                }
-//            }
-//        }
-//
-////        System.out.println(userInput.getTermFrequency().keySet());
-////        for (String userInputTerm : userInput.getTermFrequency().keySet()) {
-////            for (Business business : mapOfBusiness.values()) {
-////                for (String databaseTerms : mapOfBusiness.keySet()) {
-////
-////                }
-////            }
-////        }
-////
-////
-////
-////
-////        Business champion, runnerUp;
-////        for (Business business : mapOfBusiness.values()) {
-////            for (String term : business.getTfIDF().keySet()) {
-////                userInput.getTfIDF().get(term);
-////            }
-////            double vectorA;
-//////            System.out.println(business.getTermCount());
-////            double vectorB;
-////        }
-////        System.out.println("test");
-//        /*
-//        Idea:
-//        Make a hashset of all of the values in both doc 1 and doc 2
-//        use getOrDefault to write down their tfidf value, or 0
-//        multiply it and add them up
-//        the higher the number, the similar they are
-//        find the top 2 and post it.
-//
-//         */
-//    }
-
 
     static void cosineSimilarity(String businessID) {
         // Cosine Similarity = (vector a * vector b) / (sqrt(vectorA^2) sqrt(vectorB^2))

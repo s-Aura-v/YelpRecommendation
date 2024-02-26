@@ -73,13 +73,16 @@ public class GUI {
             @Override
             public void actionPerformed(ActionEvent e) {
                 storedInput = input.getText();
-                InformationRetrieval test = new InformationRetrieval();
-                test.cosineSimilarity(storedInput);
                 input.setText("");
                 System.out.println(storedInput);
             }
         };
         submitButton.addActionListener(submitRequest);
+    }
+
+    private void updateRecs() {
+        JLabel recc1 = new JLabel("Hello");
+        results.add(recc1);
     }
 
     public String getStoredInput() {
