@@ -73,6 +73,8 @@ public class GUI {
             @Override
             public void actionPerformed(ActionEvent e) {
                 storedInput = input.getText();
+                InformationRetrieval test = new InformationRetrieval();
+                test.cosineSimilarity(storedInput);
                 input.setText("");
                 System.out.println(storedInput);
             }

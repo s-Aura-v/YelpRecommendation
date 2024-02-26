@@ -8,9 +8,10 @@ import java.util.*;
 
 public class InformationRetrieval {
     static HashMap<String, Business> mapOfBusiness = new HashMap<>();
+    static HT frequencyTable = new HT();
+
     public static void main(String[] args) {
         // Take in Business ID and return Business
-        HT frequencyTable = new HT();
 
         Gson gson = new Gson();
         BufferedReader buffRead;
@@ -36,7 +37,7 @@ public class InformationRetrieval {
             //Note: Might need to implement the substring in a better way
             String id =  String.valueOf(businessData[i].get("business_id")).substring(1,23);
             mapOfBusiness.put(id, new Business(name, id));
-            System.out.println(id + " " + name);
+//            System.out.println(id + " " + name);
         }
 
         // 2. Get business id/reviews
@@ -132,27 +133,107 @@ public class InformationRetrieval {
             }
         }
         // Debug: Print Map
-        for (Business business : mapOfBusiness.values()) {
-            System.out.println(business.getTfIDF());
-        }
+//        for (Business business : mapOfBusiness.values()) {
+//            System.out.println(business.getTfIDF());
+//        }
+
+        // Use ID
+        cosineSimilarity("Pns2l4eNsfO8kk83dixA6A");
 
     }
 
-    void cosineSimilarity(Business userInput) {
-        // Cosine Similarity = (vector a * vector b) / sqrt(vectorA^2) sqrt(vectorB^2)
-        Business champion, runnerUp;
-        for (Business business : mapOfBusiness.values()) {
-            double vectorA;
-            double vectorB;
+//    static void cosineSimilarity(String businessName) {
+//        // Cosine Similarity = (vector a * vector b) / (sqrt(vectorA^2) sqrt(vectorB^2))
+//        Business userInput = mapOfBusiness.get(businessName);
+//
+////        HashMap<String, Double> similarityMetric = new HashMap<>();
+////        for (Object objectTerm : frequencyTable) {
+////            String databaseTerm = (String) objectTerm;
+////
+////        }
+//
+//        HashMap<String, Double> similarityMetric = new HashMap<>();
+//        for (Object objectTerm : frequencyTable) {
+//            String databaseTerm = (String) objectTerm;
+//            for (String userTerm : userInput.getTermFrequency().keySet()) {
+//                boolean foundWord = false;
+//                if (userTerm.equals(databaseTerm)) {
+//                    similarityMetric.put(userTerm, userInput.getTermFrequency().get(userTerm));
+//                    foundWord = true;
+//                } else {
+//                    similarityMetric.put(userTerm, 0.0);
+//                }
+//            }
+//        }
+//
+////        System.out.println(userInput.getTermFrequency().keySet());
+////        for (String userInputTerm : userInput.getTermFrequency().keySet()) {
+////            for (Business business : mapOfBusiness.values()) {
+////                for (String databaseTerms : mapOfBusiness.keySet()) {
+////
+////                }
+////            }
+////        }
+////
+////
+////
+////
+////        Business champion, runnerUp;
+////        for (Business business : mapOfBusiness.values()) {
+////            for (String term : business.getTfIDF().keySet()) {
+////                userInput.getTfIDF().get(term);
+////            }
+////            double vectorA;
+//////            System.out.println(business.getTermCount());
+////            double vectorB;
+////        }
+////        System.out.println("test");
+//        /*
+//        Idea:
+//        Make a hashset of all of the values in both doc 1 and doc 2
+//        use getOrDefault to write down their tfidf value, or 0
+//        multiply it and add them up
+//        the higher the number, the similar they are
+//        find the top 2 and post it.
+//
+//         */
+//    }
 
+
+    static void cosineSimilarity(String businessID) {
+        // Cosine Similarity = (vector a * vector b) / (sqrt(vectorA^2) sqrt(vectorB^2))
+        Business userInput = mapOfBusiness.get(businessID);
+        HashMap<String, Double> similarityScores = new HashMap<>();
+        // Calculate the dot product
+        for (Business business : mapOfBusiness.values()) {
+            double dotProduct = 0.0;
+            double userInputMagnitude = 0.0;
+            double businessMagnitude = 0.0;
+            for (String term : userInput.getTfIDF().keySet()) {
+                double userInputTfIdf = userInput.getTfIDF().getOrDefault(term, 0.0);
+                double businessTfIdf = business.getTfIDF().getOrDefault(term, 0.0);
+                dotProduct += userInputTfIdf * businessTfIdf;
+                userInputMagnitude += Math.pow(userInputTfIdf, 2);
+                businessMagnitude += Math.pow(businessTfIdf, 2);
+            }
+            userInputMagnitude = Math.sqrt(userInputMagnitude);
+            businessMagnitude = Math.sqrt(businessMagnitude);
+            double cosineSimilarity = dotProduct / (userInputMagnitude * businessMagnitude);
+            similarityScores.put(business.getId(), cosineSimilarity);
+        }
+        // Sort the similarity scores
+        List<Map.Entry<String, Double>> sortedScores = new ArrayList<>(similarityScores.entrySet());
+        sortedScores.sort((entry1, entry2) -> entry2.getValue().compareTo(entry1.getValue()));
+        // Get top similar businesses
+        int topN = 3; // Change this value to get more top businesses
+        System.out.println("Top " + topN + " similar businesses to " + userInput.getName() + ":");
+        for (int i = 0; i < Math.min(topN, sortedScores.size()); i++) {
+            Map.Entry<String, Double> entry = sortedScores.get(i);
+            String similarBusinessName = mapOfBusiness.get(entry.getKey()).getName();
+            double similarityScore = entry.getValue();
+            System.out.println(similarBusinessName + ": " + similarityScore);
         }
     }
-
-
-
-
-
-
 
 
     // Debug Code: Print out each key and count in a HT:
