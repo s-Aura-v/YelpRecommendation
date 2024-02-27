@@ -14,8 +14,6 @@ public class GUI {
     private JLabel info;
     private JTextField input;
 
-    private int width;
-    private int height;
     private String storedInput;
 
     // Place Holder
@@ -24,7 +22,7 @@ public class GUI {
     private JLabel text1;
     private JLabel text2;
 
-    public GUI(int w, int h) {
+    public GUI() {
         frame = new JFrame();
         container = new JPanel();
         results = new JPanel(new GridLayout(1,2));
@@ -41,12 +39,14 @@ public class GUI {
         info = new JLabel("Enter something and we'll give you some recommendations!");
         reccs = new JLabel("Here are some recommendations!");
         input = new JTextField(15);
-        this.width = w;
-        this.height = h;
+
+        setUpGUI();
+        setCloseButton();
+        storeString();
     }
 
     public void setUpGUI() {
-        frame.setSize(width,height);
+        frame.setSize(500,400);
         frame.setTitle("GUI Demo");
         top.add(info);
         top.add(input);
@@ -73,8 +73,13 @@ public class GUI {
             @Override
             public void actionPerformed(ActionEvent e) {
                 storedInput = input.getText();
-                input.setText("");
                 System.out.println(storedInput);
+                input.setText("");
+                InfoRetrieval2.tfIDF(storedInput);
+
+//                System.out.println(storedInput);
+                //HrIbP2-jdRJAU92yqyDmyw
+
             }
         };
         submitButton.addActionListener(submitRequest);
@@ -85,10 +90,6 @@ public class GUI {
         results.add(recc1);
     }
 
-    public String getStoredInput() {
-        return storedInput;
-    }
-
     public void setCloseButton() {
         ActionListener closeGUI = new ActionListener() {
             @Override
@@ -97,6 +98,10 @@ public class GUI {
             }
         };
         closeButton.addActionListener(closeGUI);
+    }
+
+    public static void main(String[] args) {
+        GUI gui = new GUI();
     }
 }
 

@@ -12,7 +12,7 @@ public class InfoRetrieval2 {
     static HashMap<String, String> businessNames = new HashMap<>();
 
 
-    public static void main(String[] args) {
+    public static void tfIDF(String inputtedID) {
         // Take in Business ID and return Business
         Gson gson = new Gson();
         BufferedReader buffRead;
@@ -34,7 +34,7 @@ public class InfoRetrieval2 {
         } catch (IOException e) {
             e.printStackTrace();
         }
-//        System.out.println(businessNames);
+//        System.out.println(businessNames.size());
 
         // 2. Get business id/reviews
         documentSize = 0;
@@ -117,7 +117,7 @@ public class InfoRetrieval2 {
 //        }
 
         // Use ID
-        cosineSimilarity("HrIbP2-jdRJAU92yqyDmyw");
+        cosineSimilarity(inputtedID);
     }
 
     static void cosineSimilarity(String businessID) {

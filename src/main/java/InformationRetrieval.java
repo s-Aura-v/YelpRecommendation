@@ -16,14 +16,14 @@ public class InformationRetrieval {
         // Take in Business ID and return Business
         Gson gson = new Gson();
         BufferedReader buffRead;
-        JsonObject[] businessData = new JsonObject[10000];
-        JsonObject[] businessReview = new JsonObject[10000];
+        JsonObject[] businessData = new JsonObject[150346];
+        JsonObject[] businessReview = new JsonObject[150346];
 
 //        System.out.println(System.getProperty("user.dir"));
         // 1. Get business name/id and [number of documents (see step 5).]
         int documentSize = 0;
         try {
-            buffRead = new BufferedReader(new FileReader("dataset/yelp_academic_dataset_business.json"));
+            buffRead = new BufferedReader(new FileReader("../dataset/yelp_academic_dataset_business.json"));
             while (documentSize < businessData.length) {
                 String line = buffRead.readLine();
                 businessData[documentSize] = gson.fromJson(line, JsonObject.class);
@@ -44,7 +44,7 @@ public class InformationRetrieval {
         // 2. Get business id/reviews
         documentSize = 0;
         try {
-            buffRead = new BufferedReader(new FileReader("dataset/yelp_academic_dataset_review.json"));
+            buffRead = new BufferedReader(new FileReader("../dataset/yelp_academic_dataset_review.json"));
             while (documentSize < businessData.length) {
                 String line = buffRead.readLine();
                 businessReview[documentSize] = gson.fromJson(line, JsonObject.class);
