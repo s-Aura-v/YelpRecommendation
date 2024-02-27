@@ -16,7 +16,6 @@ public class InfoRetrieval2 {
         // Take in Business ID and return Business
         Gson gson = new Gson();
         BufferedReader buffRead;
-        JsonObject[] businessData = new JsonObject[10000];
         JsonObject[] businessReview = new JsonObject[10000];
 
 //        System.out.println(System.getProperty("user.dir"));
@@ -24,8 +23,8 @@ public class InfoRetrieval2 {
         int documentSize = 0;
         try {
             buffRead = new BufferedReader(new FileReader("../dataset/yelp_academic_dataset_business.json"));
-            while (documentSize < businessData.length) {
-                String line = buffRead.readLine();
+            String line;
+            while ((line = buffRead.readLine()) != null) {
                 JsonObject business = gson.fromJson(line, JsonObject.class);
                 String name = String.join(" ", String.valueOf(business.get("name")).split("[^a-zA-Z0-9'&]+")).substring(1);
                 String id =  String.valueOf(business.get("business_id")).substring(1,23);
@@ -41,7 +40,7 @@ public class InfoRetrieval2 {
         documentSize = 0;
         try {
             buffRead = new BufferedReader(new FileReader("../dataset/yelp_academic_dataset_review.json"));
-            while (documentSize < businessData.length) {
+            while (documentSize < businessReview.length) {
                 String line = buffRead.readLine();
                 businessReview[documentSize] = gson.fromJson(line, JsonObject.class);
                 documentSize++;
@@ -113,12 +112,12 @@ public class InfoRetrieval2 {
             }
         }
 
-        for (Business2 business : mapOfBusiness.values()) {
-            System.out.println(business.getId());
-        }
+//        for (Business2 business : mapOfBusiness.values()) {
+//            System.out.println(business.getId());
+//        }
 
         // Use ID
-        cosineSimilarity("YjUWPpI6HXG530lwP-fb2A");
+        cosineSimilarity("HrIbP2-jdRJAU92yqyDmyw");
     }
 
     static void cosineSimilarity(String businessID) {
