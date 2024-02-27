@@ -12,7 +12,7 @@ public class InfoRetrieval2 {
     static HashMap<String, String> businessNames = new HashMap<>();
 
 
-    public static void tfIDF(String inputtedID) {
+    public static HashMap<String, Double> tfIDF(String inputtedID) {
         // Take in Business ID and return Business
         Gson gson = new Gson();
         BufferedReader buffRead;
@@ -112,18 +112,19 @@ public class InfoRetrieval2 {
             }
         }
 
-//        for (Business2 business : mapOfBusiness.values()) {
-//            System.out.println(business.getId());
-//        }
+        for (Business2 business : mapOfBusiness.values()) {
+            System.out.println(business.getId());
+        }
 
         // Use ID
-        cosineSimilarity(inputtedID);
+        return cosineSimilarity(inputtedID);
     }
 
-    static void cosineSimilarity(String businessID) {
+    static HashMap<String, Double> cosineSimilarity(String businessID) {
         // Cosine Similarity = (vector a * vector b) / (sqrt(vectorA^2) sqrt(vectorB^2))
         Business2 userInput = mapOfBusiness.get(businessID);
         HashMap<String, Double> similarityScores = new HashMap<>();
+        HashMap<String, Double> output = new HashMap<>();
         // Calculate the dot product
         for (Business2 business : mapOfBusiness.values()) {
             double dotProduct = 0.0;
@@ -153,8 +154,10 @@ public class InfoRetrieval2 {
             String similarBusinessName = mapOfBusiness.get(entry.getKey()).getId();
             String name = businessNames.get(mapOfBusiness.get(entry.getKey()).getId());
             double similarityScore = entry.getValue();
+            output.put(name, similarityScore);
             System.out.println(name + ": " + similarityScore);
         }
+        return output;
     }
 
 
