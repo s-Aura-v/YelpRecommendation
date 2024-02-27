@@ -93,13 +93,16 @@ public class GUI {
 
         int i = 0;
         for (String word : recs.keySet()) {
-            if (i == 0) {
-                rec1.setText(recs.get(word) + ": " + word);
-            } else if (i == 1) {
-                rec2.setText(recs.get(word) + ": " + word);
-                break; // We only need top two recommendations
+            if (recs.get(word) < .9) {
+                if (i == 0) {
+                    rec1.setText(recs.get(word) + ": " + word);
+                } else if (i == 1) {
+                    rec2.setText(recs.get(word) + ": " + word);
+                    break; // We only need top two recommendations
+                }
+                i++;
             }
-            i++;
+
         }
 
         // Add recommendations to the panels
