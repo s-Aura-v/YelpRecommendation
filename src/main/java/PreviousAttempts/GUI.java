@@ -1,8 +1,8 @@
+/*
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.HashMap;
-import java.util.jar.JarEntry;
 
 public class GUI {
     private JFrame frame;
@@ -76,7 +76,7 @@ public class GUI {
                 storedInput = input.getText();
                 System.out.println(storedInput);
                 input.setText("");
-                HashMap<String, Double> output = InfoRetrieval2.tfIDF(storedInput);
+                list output = InfoRetrieval.tfIDF(storedInput);
                 updateRecs(output);
                 System.out.println(output);
                 //HrIbP2-jdRJAU92yqyDmyw
@@ -88,9 +88,7 @@ public class GUI {
     private void updateRecs(HashMap<String, Double> recs) {
         JLabel rec1 = new JLabel("First Recommendation");
         JLabel rec2 = new JLabel("Second Recommendation");
-
         // Sort the HashMap by values to get the top recommendations
-
         int i = 0;
         for (String word : recs.keySet()) {
             if (recs.get(word) < .9) {
@@ -104,11 +102,9 @@ public class GUI {
             }
 
         }
-
         // Add recommendations to the panels
         firstRecc.add(rec1);
         secondRecc.add(rec2);
-
         // Refresh GUI
         frame.revalidate();
         frame.repaint();
@@ -124,9 +120,14 @@ public class GUI {
         closeButton.addActionListener(closeGUI);
     }
 
+
     public static void main(String[] args) {
         GUI gui = new GUI();
     }
 }
+
+ */
+
+
 
 

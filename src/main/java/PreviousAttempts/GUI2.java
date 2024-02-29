@@ -1,3 +1,4 @@
+/*
 import javax.swing.*;
 import java.awt.*;
 
@@ -37,6 +38,6 @@ public class GUI2 {
     public static void main(String[] args) {
         GUI2 gui = new GUI2();
     }
-
-
 }
+
+ */
