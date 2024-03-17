@@ -1,9 +1,7 @@
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 
 public class InfoRetrieval {
@@ -11,7 +9,7 @@ public class InfoRetrieval {
     static HT frequencyTable = new HT();
     static HashMap<String, String> businessNames = new HashMap<>();
 
-    public static List<Map.Entry<String, Double>> tfIDF(String inputtedID) {
+    public static List<Map.Entry<String, Double>> tfIDF(String inputtedID) throws IOException {
         // Take in Business ID and return Business
         Gson gson = new Gson();
         BufferedReader buffRead;
@@ -106,7 +104,7 @@ public class InfoRetrieval {
         return cosineSimilarity(inputtedID);
     }
 
-     static List<Map.Entry<String, Double>> cosineSimilarity(String businessID) {
+     static List<Map.Entry<String, Double>> cosineSimilarity(String businessID) throws IOException {
         // Cosine Similarity = (vector a * vector b) / (sqrt(vectorA^2) sqrt(vectorB^2))
         Business userInput = mapOfBusiness.get(businessID);
         HashMap<String, Double> similarityScores = new HashMap<>();
@@ -138,6 +136,7 @@ public class InfoRetrieval {
          }
         List<Map.Entry<String, Double>> sortedScores = new ArrayList<>(scoresWithName.entrySet());
         sortedScores.sort((entry1, entry2) -> entry2.getValue().compareTo(entry1.getValue()));
+        serializeInfo(scoresWithName);
         // Get similar businesses
         int topN = 3;
 //        System.out.println("Top " + topN + " similar businesses to " + userInput.getId() + ":");
@@ -149,5 +148,13 @@ public class InfoRetrieval {
 //            System.out.println(name + ": " + similarityScore);
 //        }
         return sortedScores;
+    }
+
+    static void serializeInfo(HashMap<String, Double> cosineHashTable) throws IOException {
+        FileOutputStream fileOut = new FileOutputStream("businessInfo");
+        ObjectOutput out = new ObjectOutputStream(fileOut);
+        out.writeObject(cosineHashTable);
+        out.close();
+        fileOut.close();
     }
 }

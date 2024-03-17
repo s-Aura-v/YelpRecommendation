@@ -2,6 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -57,7 +58,12 @@ public class FindSimilarBusiness {
                 String businessID = inputField.getText();
                 inputField.setText("");
                 //HrIbP2-jdRJAU92yqyDmyw
-                java.util.List<Map.Entry<String, Double>> output = InfoRetrieval.tfIDF(businessID);
+                List<Map.Entry<String, Double>> output = null;
+                try {
+                    output = InfoRetrieval.tfIDF(businessID);
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
                 updateOutputWindow(output, businessID);
             }
         };

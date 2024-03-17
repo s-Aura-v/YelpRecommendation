@@ -2,9 +2,8 @@ import java.io.*;
 import java.util.Iterator;
 import java.util.Spliterator;
 import java.util.function.Consumer;
-
+// Adapted through Doug Lea's Code (https://gee.cs.oswego.edu/dl/csc365/HT.java)
 class HT implements java.io.Serializable, Iterable<Object>{
-
     static final class Node {
         Object key;
         Node next;
