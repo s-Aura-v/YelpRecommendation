@@ -1,38 +1,34 @@
+import java.io.*;
 import java.util.HashMap;
 
-public class Business {
-//    private String name;
+public class Business implements java.io.Serializable {
     private String review;
     private String id;
-    private HT termCount;
+    private String name;
+    private final HT termCount;
     private HashMap<String, Double> termFrequency;
-    private HashMap<String, Double> tfIDF;
-
+    private final HashMap<String, Double> tfIDF;
     public Business(String id, String review) {
-//        this.name = name;
         this.id = id;
         this.review = review;
         termCount = new HT();
         tfIDF = new HashMap<>();
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+    public String getName() {
+        return name;
+    }
     public void setTermCount(HT termFrequency) {
         this.termCount.copyHT(termFrequency);
     }
-
     public HT getTermCount() {
         return termCount;
     }
-
-
-    public void setId(String id) {
-        this.id = id;
-    }
     public void setTermFrequency(HashMap<String, Double> frequencyForWords) {
         this.termFrequency = frequencyForWords;
-    }
-    public void setReview(String review) {
-        this.review = review;
     }
     public void addToTfIDF(String word, double tfIDFValue) {
         this.tfIDF.put(word, tfIDFValue);
@@ -46,18 +42,25 @@ public class Business {
     public String getId() {
         return id;
     }
-
     public String getReview() {
         return review;
     }
-
-
-    //    public void setName(String name) {
-//        this.name = name;
-//    }
-
-    //    public String getName() {
-//        return name;
-//    }
-
+    public void serializeBusiness(String inputtedID) throws IOException {
+        FileOutputStream fileOut;
+        try {
+            //HrIbP2-jdRJAU92yqyDmyw
+            fileOut = new FileOutputStream(System.getProperty("user.dir") + "/SerializedDocuments/" + inputtedID + "__" + this.id);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+        ObjectOutput out;
+        try {
+            out = new ObjectOutputStream(fileOut);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        out.writeObject(this);
+        out.close();
+        fileOut.close();
+    }
 }

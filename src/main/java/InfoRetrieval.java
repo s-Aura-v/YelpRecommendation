@@ -6,8 +6,10 @@ import java.util.*;
 
 public class InfoRetrieval {
     static HashMap<String, Business> mapOfBusiness = new HashMap<>();
-    static HT frequencyTable = new HT();
     static HashMap<String, String> businessNames = new HashMap<>();
+    static StringHT idToFileName = new StringHT();
+    static HT frequencyTable = new HT();
+    static int MAX_LENGTH = 10000;
 
     public static List<Map.Entry<String, Double>> tfIDF(String inputtedID) throws IOException {
         // Take in Business ID and return Business
@@ -97,10 +99,25 @@ public class InfoRetrieval {
                 business.addToTfIDF(word, tfIDF);
             }
         }
-//        for (Business business : mapOfBusiness.values()) {
+        //7. Add business name
+        for (String id : mapOfBusiness.keySet()) {
+            if (businessNames.containsKey(id)) {
+                mapOfBusiness.get(id).setName(businessNames.get(id));
+            }
+        }
+//         Use ID
+        BTree btree = new BTree();
+        for (Business business : mapOfBusiness.values()) {
+            business.serializeBusiness(inputtedID);
+            btree.put(business.getId(), business.getName());
+        }
+//        System.out.println(btree);
+        System.out.println("size:    " + btree.size());
+        System.out.println("height:  " + btree.height());
+
+        //        for (Business business : mapOfBusiness.values()) {
 //            System.out.println(business.getId());
 //        }
-        // Use ID
         return cosineSimilarity(inputtedID);
     }
 
@@ -136,7 +153,6 @@ public class InfoRetrieval {
          }
         List<Map.Entry<String, Double>> sortedScores = new ArrayList<>(scoresWithName.entrySet());
         sortedScores.sort((entry1, entry2) -> entry2.getValue().compareTo(entry1.getValue()));
-        serializeInfo(scoresWithName);
         // Get similar businesses
         int topN = 3;
 //        System.out.println("Top " + topN + " similar businesses to " + userInput.getId() + ":");
@@ -150,11 +166,5 @@ public class InfoRetrieval {
         return sortedScores;
     }
 
-    static void serializeInfo(HashMap<String, Double> cosineHashTable) throws IOException {
-        FileOutputStream fileOut = new FileOutputStream("businessInfo");
-        ObjectOutput out = new ObjectOutputStream(fileOut);
-        out.writeObject(cosineHashTable);
-        out.close();
-        fileOut.close();
-    }
+
 }

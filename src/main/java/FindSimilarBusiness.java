@@ -72,7 +72,6 @@ public class FindSimilarBusiness {
 
     void updateOutputWindow(List<Map.Entry<String, Double>> businessList, String businessID) {
         double champion = 0.0;
-        double runnerUp = 0.0;
         for (int i = 0; i < 3; i++) {
             System.out.println(businessList.get(i));
             if (businessList.get(i).getValue() < .999) {
@@ -82,7 +81,6 @@ public class FindSimilarBusiness {
                             + businessList.get(i).getValue());
                     mostSimilarBusiness.add(label);
                 } else {
-                    runnerUp = businessList.get(i).getValue();
                     JLabel label = new JLabel(businessList.get(i).getKey() + "\n with a similarity score of: "
                             + businessList.get(i).getValue());
                     runnerUpBusiness.add(label);
