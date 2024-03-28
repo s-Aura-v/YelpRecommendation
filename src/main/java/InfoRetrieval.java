@@ -2,6 +2,8 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 
 public class InfoRetrieval {
@@ -15,7 +17,8 @@ public class InfoRetrieval {
         // Take in Business ID and return Business
         Gson gson = new Gson();
         BufferedReader buffRead;
-        JsonObject[] businessReview = new JsonObject[10000];
+        JsonObject[] businessReview = new JsonObject[MAX_LENGTH];
+
         // 1. Get business name/id and [number of documents (see step 5).]
         int documentSize = 0;
         try {
@@ -49,6 +52,17 @@ public class InfoRetrieval {
             String review = String.join(" ", String.valueOf(businessReview[i].get("text")).split("[^a-zA-Z0-9'&]+")).substring(1);
             mapOfBusiness.put(id, new Business(id, review));
         }
+
+        //2.5) Load Serialized Data
+        if (Files.exists(Path.of(System.getProperty("user.dir") + "/SerializedDocuments/" + inputtedID))) {
+            for (Business business : mapOfBusiness.values()) {
+                business.loadSerialization(inputtedID);
+            }
+            System.out.println("Your file was deserialized! :)");
+            return cosineSimilarity(inputtedID);
+        }
+
+
         //3b. Total Document Frequency Table
         // This is how many documents contains the same word
         for (Business business : mapOfBusiness.values()) {
@@ -111,6 +125,9 @@ public class InfoRetrieval {
             business.serializeBusiness(inputtedID);
             btree.put(business.getId(), business.getName());
         }
+        System.out.println("Your file was serialized! :)");
+
+
 //        System.out.println(btree);
         System.out.println("size:    " + btree.size());
         System.out.println("height:  " + btree.height());
@@ -164,6 +181,11 @@ public class InfoRetrieval {
 //            System.out.println(name + ": " + similarityScore);
 //        }
         return sortedScores;
+    }
+
+
+    public static void findKMeans() {
+
     }
 
 
