@@ -12,6 +12,7 @@ public class Business implements java.io.Serializable {
     private HT termCount;
     private HashMap<String, Double> termFrequency;
     private HashMap<String, Double> tfIDF;
+    private double similarityValue;
 
     public Business(String id, String review) {
         this.id = id;
@@ -19,43 +20,39 @@ public class Business implements java.io.Serializable {
         termCount = new HT();
         tfIDF = new HashMap<>();
     }
-
     public void setName(String name) {
         this.name = name;
     }
-
     public String getName() {
         return name;
     }
-
+    public double getSimilarityValue() {
+        return similarityValue;
+    }
+    public void setSimilarityValue(double similarityValue) {
+        this.similarityValue = similarityValue;
+    }
     public void setTermCount(HT termFrequency) {
         this.termCount.copyHT(termFrequency);
     }
-
     public HT getTermCount() {
         return termCount;
     }
-
     public void setTermFrequency(HashMap<String, Double> frequencyForWords) {
         this.termFrequency = frequencyForWords;
     }
-
     public void addToTfIDF(String word, double tfIDFValue) {
         this.tfIDF.put(word, tfIDFValue);
     }
-
     public HashMap<String, Double> getTfIDF() {
         return tfIDF;
     }
-
     public HashMap<String, Double> getTermFrequency() {
         return termFrequency;
     }
-
     public String getId() {
         return id;
     }
-
     public String getReview() {
         return review;
     }
@@ -63,12 +60,12 @@ public class Business implements java.io.Serializable {
     @Override
     public String toString() {
         return "Business{" +
-                "review='" + review + '\'' +
-                ", id='" + id + '\'' +
-                ", name='" + name + '\'' +
+                "review='" + this.review + '\'' +
+                ", id='" + this.id + '\'' +
+                ", name='" + this.name + '\'' +
+                ", similarity=" + this.similarityValue + '\'' +
                 '}';
     }
-
     public void serializeBusiness(String inputtedID) throws IOException {
         // Directory
         String newFolderDirectory = System.getProperty("user.dir") + "/SerializedDocuments/" + inputtedID;

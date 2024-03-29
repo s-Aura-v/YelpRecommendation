@@ -6,6 +6,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 
+import static java.lang.Double.MAX_VALUE;
+
 public class InfoRetrieval {
     static HashMap<String, Business> mapOfBusiness = new HashMap<>();
     static HashMap<String, String> businessNames = new HashMap<>();
@@ -160,6 +162,7 @@ public class InfoRetrieval {
             // Add an insignificant value to prevent NaN
             double cosineSimilarity = dotProduct / ((userInputMagnitude * businessMagnitude) + .000001);
             similarityScores.put(business.getId(), cosineSimilarity);
+            business.setSimilarityValue(cosineSimilarity);
         }
         // Sort the similarity scores
          HashMap<String, Double> scoresWithName = new HashMap<>();
@@ -180,12 +183,87 @@ public class InfoRetrieval {
 //            output.put(name, similarityScore);
 //            System.out.println(name + ": " + similarityScore);
 //        }
+         System.out.println(mapOfBusiness.get("0_FXWju-91BBL84WaIgylA"));
+        findKMeans();
         return sortedScores;
     }
 
 
     public static void findKMeans() {
+        int K_VALUE = 5;
+        int sizeOfArray = 2000;
+        HashMap<String, Business> mapOfBusinessCopy = mapOfBusiness;
+        ArrayList<Double> clusterZero = new ArrayList<>();
+        ArrayList<Double> clusterOne = new ArrayList<>();
+        ArrayList<Double> clusterTwo = new ArrayList<>();
+        ArrayList<Double> clusterThree = new ArrayList<>();
+        ArrayList<Double> clusterFour = new ArrayList<>();
 
+//        double[] clusterTwo = new double[sizeOfArray];
+//        double[] clusterThree = new double[sizeOfArray];
+//        double[] clusterFour = new double[sizeOfArray];
+//        double[] clusterFive = new double[sizeOfArray];
+
+        List<Double> allCosineSimilaries = new ArrayList<>();
+        for (Business x : mapOfBusinessCopy.values()) {
+            allCosineSimilaries.add(x.getSimilarityValue());
+        }
+        Random rand = new Random();
+        List<Double> clusterCentroids = new ArrayList<>();
+        for (int i = 0; i < K_VALUE; i++) {
+            int index = rand.nextInt(allCosineSimilaries.size());
+            clusterCentroids.add(allCosineSimilaries.get(index));
+            allCosineSimilaries.remove(index);
+        }
+        double[] distance = new double[K_VALUE];
+        double closestCluster = MAX_VALUE;
+        int clusterIndex = -1;
+        for (Business business: mapOfBusinessCopy.values()) {
+            double businessPosition = business.getSimilarityValue();
+            for (int i = 0; i < K_VALUE; i++) {
+                distance[i] = Math.abs(businessPosition - clusterCentroids.get(i));
+                if (closestCluster > distance[i]) {
+                    if (i == 0 && clusterZero.size() < 1000) {
+                        closestCluster = distance[i];
+                        clusterIndex = i;
+                    }
+                    } else if (i == 1 && clusterOne.size() < 1000) {
+                    closestCluster = distance[i];
+                    clusterIndex = i;
+                } else if (i == 2 && clusterTwo.size() < 1000) {
+                    closestCluster = distance[i];
+                    clusterIndex = i;
+                } else if (i == 3 && clusterThree.size() < 1000) {
+                    closestCluster = distance[i];
+                    clusterIndex = i;
+                } else if (i == 4 && clusterFour.size() < 1000) {
+                    closestCluster = distance[i];
+                    clusterIndex = i;
+                }
+            }
+            switch (clusterIndex) {
+                case 0 -> clusterZero.add(closestCluster);
+                case 1 -> clusterOne.add(closestCluster);
+                case 2 -> clusterTwo.add(closestCluster);
+                case 3 -> clusterThree.add(closestCluster);
+                case 4 -> clusterFour.add(closestCluster);
+            }
+
+//            switch (clusterIndex) {
+//                case 0 -> {
+//                    if(clusterZero.size() < 1000) clusterZero.add(closestCluster); }
+//                case 1 -> {
+//                    if (clusterOne.size() < 1000) clusterOne.add(closestCluster); }
+//                case 2 -> {
+//                    if (clusterTwo.size() < 1000) clusterTwo.add(closestCluster); }
+//                case 3 -> {
+//                    if (clusterThree.size() < 1000) clusterThree.add(closestCluster); }
+//                case 4 -> {
+//                    if (clusterFour.size() < 1000) clusterFour.add(closestCluster); }
+//            }
+
+        }
+        System.out.println(clusterZero.size() + " " + clusterOne.size() + " " + clusterTwo.size() + " " + clusterThree.size() + " " + clusterFour.size());
     }
 
 

@@ -62,6 +62,8 @@ public class BusinessFinderGUI {
         westUserInput.add(businessListPanel);
     }
 
+
+
     private void createMenu() {
         JLabel info = new JLabel("Input a business ID and get the two most similar Businessess!");
         title.add(info);
