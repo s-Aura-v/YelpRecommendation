@@ -14,15 +14,13 @@ public class InfoRetrieval {
     static HashMap<String, Business> mapOfBusiness = new HashMap<>();
     static HashMap<String, String> businessNames = new HashMap<>();
     static HT frequencyTable = new HT();
-    static int MAX_LENGTH = 10000;
 
     public static List<Map.Entry<String, Double>> tfIDF(String inputtedID) throws IOException {
         // Take in Business ID and return Business
         Gson gson = new Gson();
         BufferedReader buffRead;
-        JsonObject[] businessReview = new JsonObject[MAX_LENGTH];
 
-        // 1. Get business name/id and [number of documents (see step 5).]
+        //1. Get business name/id
         int documentSize = 0;
         try {
             buffRead = new BufferedReader(new FileReader("../yelp_dataset/yelp_academic_dataset_business.json"));
@@ -37,29 +35,33 @@ public class InfoRetrieval {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        System.out.println(businessNames.size());
-        // 2. Get business id/reviews
-        documentSize = 0;
+
+        //2. Get business id/reviews
+        JsonObject[] businessReview = new JsonObject[documentSize];
+        int index = 0;
         try {
             buffRead = new BufferedReader(new FileReader("../yelp_dataset/yelp_academic_dataset_review.json"));
-            while (documentSize < businessReview.length) {
+            while (index < documentSize - 1) {
                 String line = buffRead.readLine();
-                businessReview[documentSize] = gson.fromJson(line, JsonObject.class);
-                documentSize++;
+                businessReview[index] = gson.fromJson(line, JsonObject.class);
+                index++;
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
-        System.out.println("docsize: " + documentSize);
 
-        for (int i = 0; i < businessReview.length; i++) {
-            String id = String.valueOf(businessReview[i].get("business_id")).substring(1,23);
-            String review = String.join(" ", String.valueOf(businessReview[i].get("text")).split("[^a-zA-Z0-9'&]+")).substring(1);
+        for (int i = 0; i < businessReview.length - 1; i++) {
+            String id = String.valueOf(businessReview[i].get("business_id")).substring(1, 23);
+
+            String unfilteredReview = String.join( " ", String.valueOf(businessReview[i].get("text")).split("[^a-zA-Z0-9'&]+"));
+            String review = "placeholder place";
+            if (unfilteredReview.length() != 0) {
+                review = unfilteredReview.substring(1);
+            }
             mapOfBusiness.put(id, new Business(id, review));
         }
-        System.out.println(mapOfBusiness.size());
 
-        //2.5) Load Serialized Data
+        //3. Load Serialized Data
         if (Files.exists(Path.of(System.getProperty("user.dir") + "/SerializedDocuments/" + inputtedID))) {
             for (Business business : mapOfBusiness.values()) {
                 business.loadSerialization(inputtedID);
@@ -81,8 +83,8 @@ public class InfoRetrieval {
                 }
             }
         }
-//        frequencyTable.printAll();
-        // 4. Term Frequency Version 2
+
+        // 4. Term Frequency
         for (Business business : mapOfBusiness.values()) {
             HashMap<String, Integer> termFrequency = new HashMap<>();
             HashMap<String, Double> termFrequencyTF = new HashMap<>();
@@ -100,6 +102,7 @@ public class InfoRetrieval {
                 business.setTermFrequency(termFrequencyTF);
             }
         }
+
         //5. Inverse-Document Frequency
         // Log of (total Number of Documents [documentSize : see step 1] / documents with the term [frequencyTable.getCount(x)])
         HashMap<String, Double> idfValues = new HashMap<>();
@@ -109,7 +112,7 @@ public class InfoRetrieval {
             double idf = Math.log10( documentSize / (double) count);
             idfValues.put(businessName,idf);
         }
-//        System.out.println(idfValues);
+
         //6. TF-IDF : tf * idf
         for (Business business : mapOfBusiness.values()) {
             for (String word : business.getTermFrequency().keySet()) {
@@ -119,12 +122,14 @@ public class InfoRetrieval {
                 business.addToTfIDF(word, tfIDF);
             }
         }
+
         //7. Add business name
         for (String id : mapOfBusiness.keySet()) {
             if (businessNames.containsKey(id)) {
                 mapOfBusiness.get(id).setName(businessNames.get(id));
             }
         }
+
 //         Use ID
         BTree btree = new BTree();
         for (Business business : mapOfBusiness.values()) {
@@ -132,15 +137,8 @@ public class InfoRetrieval {
             btree.put(business.getId(), business.getName());
         }
         System.out.println("Your file was serialized! :)");
-
-
 //        System.out.println(btree);
-        System.out.println("size:    " + btree.size());
-        System.out.println("height:  " + btree.height());
-
-        //        for (Business business : mapOfBusiness.values()) {
-//            System.out.println(business.getId());
-//        }
+        System.out.println("height: "  + btree.height() + "\n size: " + btree.size() );
         return cosineSimilarity(inputtedID);
     }
 
@@ -171,34 +169,28 @@ public class InfoRetrieval {
         // Sort the similarity scores
          HashMap<String, Double> scoresWithName = new HashMap<>();
          for (String id : similarityScores.keySet()) {
+             mapOfBusiness.get(id).setSimilarityValue(similarityScores.get(id));
+
              String name = businessNames.get(mapOfBusiness.get(id).getId());
              scoresWithName.put(name, similarityScores.get(id));
-//             similarityScores.remove(id);
          }
         List<Map.Entry<String, Double>> sortedScores = new ArrayList<>(scoresWithName.entrySet());
         sortedScores.sort((entry1, entry2) -> entry2.getValue().compareTo(entry1.getValue()));
         // Get similar businesses
-        int topN = 3;
         findKMeans();
         return sortedScores;
     }
 
-
     public static void findKMeans() {
         int K_VALUE = 5;
-        int sizeOfArray = 2000;
+        int MAX_ARRAY = 2000;
         HashMap<String, Business> mapOfBusinessCopy = mapOfBusiness;
         ArrayList<Double> clusterZero = new ArrayList<>();
         ArrayList<Double> clusterOne = new ArrayList<>();
         ArrayList<Double> clusterTwo = new ArrayList<>();
         ArrayList<Double> clusterThree = new ArrayList<>();
         ArrayList<Double> clusterFour = new ArrayList<>();
-
-//        double[] clusterTwo = new double[sizeOfArray];
-//        double[] clusterThree = new double[sizeOfArray];
-//        double[] clusterFour = new double[sizeOfArray];
-//        double[] clusterFive = new double[sizeOfArray];
-
+        
         List<Double> allCosineSimilaries = new ArrayList<>();
         for (Business x : mapOfBusinessCopy.values()) {
             allCosineSimilaries.add(x.getSimilarityValue());
@@ -212,54 +204,52 @@ public class InfoRetrieval {
         }
         double[] distance = new double[K_VALUE];
         double closestCluster = MAX_VALUE;
+        String businessID = "placeholder";
         int clusterIndex = -1;
         for (Business business: mapOfBusinessCopy.values()) {
             double businessPosition = business.getSimilarityValue();
             for (int i = 0; i < K_VALUE; i++) {
                 distance[i] = Math.abs(businessPosition - clusterCentroids.get(i));
                 if (closestCluster > distance[i]) {
-                    if (i == 0 && clusterZero.size() < 1000) {
+                    if (i == 0 && (clusterZero.size() < MAX_ARRAY)) {
                         closestCluster = distance[i];
                         clusterIndex = i;
+                        businessID = business.getId();
+                    } else if (i == 1 && (clusterOne.size() < MAX_ARRAY)) {
+                        closestCluster = distance[i];
+                        clusterIndex = i;
+                        businessID = business.getId();
+                    } else if (i == 2 && (clusterTwo.size() < MAX_ARRAY)) {
+                        closestCluster = distance[i];
+                        clusterIndex = i;
+                        businessID = business.getId();
+                    } else if (i == 3 && (clusterThree.size() < MAX_ARRAY)) {
+                        closestCluster = distance[i];
+                        clusterIndex = i;
+                        businessID = business.getId();
+                    } else if (i == 4 && (clusterFour.size() < MAX_ARRAY)) {
+                        closestCluster = distance[i];
+                        clusterIndex = i;
+                        businessID = business.getId();
                     }
-                    } else if (i == 1 && clusterOne.size() < 1000) {
-                    closestCluster = distance[i];
-                    clusterIndex = i;
-                } else if (i == 2 && clusterTwo.size() < 1000) {
-                    closestCluster = distance[i];
-                    clusterIndex = i;
-                } else if (i == 3 && clusterThree.size() < 1000) {
-                    closestCluster = distance[i];
-                    clusterIndex = i;
-                } else if (i == 4 && clusterFour.size() < 1000) {
-                    closestCluster = distance[i];
-                    clusterIndex = i;
                 }
             }
+            //TODO: Fix this.
+//            if ((clusterZero.size() > 2000)
+//                    && (clusterOne.size() > 2000)
+//                    && (clusterTwo.size() > 2000)
+//                    && (clusterThree.size() > 2000)
+//                    && (clusterFour.size() > 2000)) { return; }
+
             switch (clusterIndex) {
-                case 0 -> clusterZero.add(closestCluster);
-                case 1 -> clusterOne.add(closestCluster);
-                case 2 -> clusterTwo.add(closestCluster);
-                case 3 -> clusterThree.add(closestCluster);
-                case 4 -> clusterFour.add(closestCluster);
+                case 0 -> { clusterZero.add(closestCluster); mapOfBusiness.get(businessID).setCluster(0); }
+                case 1 -> { clusterOne.add(closestCluster); mapOfBusiness.get(businessID).setCluster(1); }
+                case 2 -> { clusterTwo.add(closestCluster); mapOfBusiness.get(businessID).setCluster(2); }
+                case 3 -> { clusterThree.add(closestCluster); mapOfBusiness.get(businessID).setCluster(3); }
+                case 4 -> { clusterFour.add(closestCluster); mapOfBusiness.get(businessID).setCluster(4); }
             }
-
-//            switch (clusterIndex) {
-//                case 0 -> {
-//                    if(clusterZero.size() < 1000) clusterZero.add(closestCluster); }
-//                case 1 -> {
-//                    if (clusterOne.size() < 1000) clusterOne.add(closestCluster); }
-//                case 2 -> {
-//                    if (clusterTwo.size() < 1000) clusterTwo.add(closestCluster); }
-//                case 3 -> {
-//                    if (clusterThree.size() < 1000) clusterThree.add(closestCluster); }
-//                case 4 -> {
-//                    if (clusterFour.size() < 1000) clusterFour.add(closestCluster); }
-//            }
-
+            closestCluster = MAX_VALUE;
         }
-        System.out.println(clusterZero.size() + " " + clusterOne.size() + " " + clusterTwo.size() + " " + clusterThree.size() + " " + clusterFour.size());
+//        System.out.println(clusterZero.size() + " " + clusterOne.size() + " " + clusterTwo.size() + " " + clusterThree.size() + " " + clusterFour.size());
     }
-
-
 }

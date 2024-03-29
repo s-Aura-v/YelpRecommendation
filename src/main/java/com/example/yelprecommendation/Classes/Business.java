@@ -15,12 +15,20 @@ public class Business implements Serializable {
     private HashMap<String, Double> termFrequency;
     private HashMap<String, Double> tfIDF;
     private double similarityValue;
+    private int cluster; // 0 - 4
 
     public Business(String id, String review) {
         this.id = id;
         this.review = review;
         termCount = new HT();
         tfIDF = new HashMap<>();
+    }
+    public int getCluster() {
+        return cluster;
+    }
+
+    public void setCluster(int cluster) {
+        this.cluster = cluster;
     }
     public void setName(String name) {
         this.name = name;
