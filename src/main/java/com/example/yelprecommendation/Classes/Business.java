@@ -123,7 +123,6 @@ public class Business implements Serializable {
             throw new RuntimeException(e);
         }
     }
-
     private void setBusiness(Business business) {
         this.name = business.name;
         this.id = business.id;

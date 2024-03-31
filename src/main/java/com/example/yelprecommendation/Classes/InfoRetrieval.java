@@ -13,15 +13,15 @@ import static java.lang.Double.MAX_VALUE;
 public class InfoRetrieval {
     static HashMap<String, Business> mapOfBusiness = new HashMap<>();
     static HashMap<String, String> businessNames = new HashMap<>();
+    static List<Map.Entry<String, Double>> sortedScores;
     static HT frequencyTable = new HT();
+    static int documentSize = 0;
 
-    public static List<Map.Entry<String, Double>> tfIDF(String inputtedID) throws IOException {
-        // Take in Business ID and return Business
+    public static void hashTableSetup() {
         Gson gson = new Gson();
         BufferedReader buffRead;
 
         //1. Get business name/id
-        int documentSize = 0;
         try {
             buffRead = new BufferedReader(new FileReader("../yelp_dataset/yelp_academic_dataset_business.json"));
             String line;
@@ -60,6 +60,59 @@ public class InfoRetrieval {
             }
             mapOfBusiness.put(id, new Business(id, review));
         }
+
+        for (String id : mapOfBusiness.keySet()) {
+            if (businessNames.containsKey(id)) {
+                mapOfBusiness.get(id).setName(businessNames.get(id));
+            }
+        }
+    }
+
+    public static HashMap<String, Business> tfIDF(String inputtedID) throws IOException {
+        // Take in Business ID and return Business
+//        Gson gson = new Gson();
+//        BufferedReader buffRead;
+//
+//        //1. Get business name/id
+//        int documentSize = 0;
+//        try {
+//            buffRead = new BufferedReader(new FileReader("../yelp_dataset/yelp_academic_dataset_business.json"));
+//            String line;
+//            while ((line = buffRead.readLine()) != null) {
+//                JsonObject business = gson.fromJson(line, JsonObject.class);
+//                String name = String.join(" ", String.valueOf(business.get("name")).split("[^a-zA-Z0-9'&]+")).substring(1);
+//                String id =  String.valueOf(business.get("business_id")).substring(1,23);
+//                businessNames.put(id, name);
+//                documentSize++;
+//            }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//
+//        //2. Get business id/reviews
+//        JsonObject[] businessReview = new JsonObject[documentSize];
+//        int index = 0;
+//        try {
+//            buffRead = new BufferedReader(new FileReader("../yelp_dataset/yelp_academic_dataset_review.json"));
+//            while (index < documentSize - 1) {
+//                String line = buffRead.readLine();
+//                businessReview[index] = gson.fromJson(line, JsonObject.class);
+//                index++;
+//            }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//
+//        for (int i = 0; i < businessReview.length - 1; i++) {
+//            String id = String.valueOf(businessReview[i].get("business_id")).substring(1, 23);
+//
+//            String unfilteredReview = String.join( " ", String.valueOf(businessReview[i].get("text")).split("[^a-zA-Z0-9'&]+"));
+//            String review = "placeholder place";
+//            if (unfilteredReview.length() != 0) {
+//                review = unfilteredReview.substring(1);
+//            }
+//            mapOfBusiness.put(id, new Business(id, review));
+//        }
 
         //3. Load Serialized Data
         if (Files.exists(Path.of(System.getProperty("user.dir") + "/SerializedDocuments/" + inputtedID))) {
@@ -124,25 +177,31 @@ public class InfoRetrieval {
         }
 
         //7. Add business name
-        for (String id : mapOfBusiness.keySet()) {
-            if (businessNames.containsKey(id)) {
-                mapOfBusiness.get(id).setName(businessNames.get(id));
-            }
-        }
+//        for (String id : mapOfBusiness.keySet()) {
+//            if (businessNames.containsKey(id)) {
+//                mapOfBusiness.get(id).setName(businessNames.get(id));
+//            }
+//        }
 
-//         Use ID
-        BTree btree = new BTree();
+        //8. Serialize
         for (Business business : mapOfBusiness.values()) {
             business.serializeBusiness(inputtedID);
-            btree.put(business.getId(), business.getName());
         }
         System.out.println("Your file was serialized! :)");
 //        System.out.println(btree);
-        System.out.println("height: "  + btree.height() + "\n size: " + btree.size() );
+//        System.out.println("height: "  + btree.height() + "\n size: " + btree.size() );
         return cosineSimilarity(inputtedID);
     }
 
-     static List<Map.Entry<String, Double>> cosineSimilarity(String businessID) throws IOException {
+    public static BTree<String ,String> getBusinessBTree() {
+        BTree<String ,String> btree = new BTree();
+        for (Business business : mapOfBusiness.values()) {
+            btree.put(business.getName(), business.getId());
+        }
+        return btree;
+    }
+
+     private static HashMap<String, Business> cosineSimilarity(String businessID) throws IOException {
         // Cosine Similarity = (vector a * vector b) / (sqrt(vectorA^2) sqrt(vectorB^2))
         Business userInput = mapOfBusiness.get(businessID);
         HashMap<String, Double> similarityScores = new HashMap<>();
@@ -170,18 +229,20 @@ public class InfoRetrieval {
          HashMap<String, Double> scoresWithName = new HashMap<>();
          for (String id : similarityScores.keySet()) {
              mapOfBusiness.get(id).setSimilarityValue(similarityScores.get(id));
-
              String name = businessNames.get(mapOfBusiness.get(id).getId());
              scoresWithName.put(name, similarityScores.get(id));
          }
-        List<Map.Entry<String, Double>> sortedScores = new ArrayList<>(scoresWithName.entrySet());
-        sortedScores.sort((entry1, entry2) -> entry2.getValue().compareTo(entry1.getValue()));
-        // Get similar businesses
-        findKMeans();
+         sortedScores = new ArrayList<>(scoresWithName.entrySet());
+         sortedScores.sort((entry1, entry2) -> entry2.getValue().compareTo(entry1.getValue()));
+         findKMeans();
+         return mapOfBusiness;
+    }
+
+    public static List<Map.Entry<String, Double>> getSortedScores() {
         return sortedScores;
     }
 
-    public static void findKMeans() {
+    private static void findKMeans() {
         int K_VALUE = 5;
         int MAX_ARRAY = 2000;
         HashMap<String, Business> mapOfBusinessCopy = mapOfBusiness;
@@ -190,7 +251,7 @@ public class InfoRetrieval {
         ArrayList<Double> clusterTwo = new ArrayList<>();
         ArrayList<Double> clusterThree = new ArrayList<>();
         ArrayList<Double> clusterFour = new ArrayList<>();
-        
+
         List<Double> allCosineSimilaries = new ArrayList<>();
         for (Business x : mapOfBusinessCopy.values()) {
             allCosineSimilaries.add(x.getSimilarityValue());
@@ -234,13 +295,6 @@ public class InfoRetrieval {
                     }
                 }
             }
-            //TODO: Fix this.
-//            if ((clusterZero.size() > 2000)
-//                    && (clusterOne.size() > 2000)
-//                    && (clusterTwo.size() > 2000)
-//                    && (clusterThree.size() > 2000)
-//                    && (clusterFour.size() > 2000)) { return; }
-
             switch (clusterIndex) {
                 case 0 -> { clusterZero.add(closestCluster); mapOfBusiness.get(businessID).setCluster(0); }
                 case 1 -> { clusterOne.add(closestCluster); mapOfBusiness.get(businessID).setCluster(1); }
@@ -250,6 +304,5 @@ public class InfoRetrieval {
             }
             closestCluster = MAX_VALUE;
         }
-//        System.out.println(clusterZero.size() + " " + clusterOne.size() + " " + clusterTwo.size() + " " + clusterThree.size() + " " + clusterFour.size());
     }
 }
