@@ -158,7 +158,6 @@ public class BTree<Key extends Comparable<Key>, Value> {
                 if (less(key, h.children[j].key)) break;
             }
         }
-
         // internal node
         else {
             for (j = 0; j < h.m; j++) {
@@ -172,7 +171,6 @@ public class BTree<Key extends Comparable<Key>, Value> {
                 }
             }
         }
-
         for (int i = h.m; i > j; i--)
             h.children[i] = h.children[i - 1];
         h.children[j] = t;

@@ -66,54 +66,11 @@ public class InfoRetrieval {
                 mapOfBusiness.get(id).setName(businessNames.get(id));
             }
         }
+
+        removeDuplicates();
     }
 
     public static HashMap<String, Business> tfIDF(String inputtedID) throws IOException {
-        // Take in Business ID and return Business
-//        Gson gson = new Gson();
-//        BufferedReader buffRead;
-//
-//        //1. Get business name/id
-//        int documentSize = 0;
-//        try {
-//            buffRead = new BufferedReader(new FileReader("../yelp_dataset/yelp_academic_dataset_business.json"));
-//            String line;
-//            while ((line = buffRead.readLine()) != null) {
-//                JsonObject business = gson.fromJson(line, JsonObject.class);
-//                String name = String.join(" ", String.valueOf(business.get("name")).split("[^a-zA-Z0-9'&]+")).substring(1);
-//                String id =  String.valueOf(business.get("business_id")).substring(1,23);
-//                businessNames.put(id, name);
-//                documentSize++;
-//            }
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//
-//        //2. Get business id/reviews
-//        JsonObject[] businessReview = new JsonObject[documentSize];
-//        int index = 0;
-//        try {
-//            buffRead = new BufferedReader(new FileReader("../yelp_dataset/yelp_academic_dataset_review.json"));
-//            while (index < documentSize - 1) {
-//                String line = buffRead.readLine();
-//                businessReview[index] = gson.fromJson(line, JsonObject.class);
-//                index++;
-//            }
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//
-//        for (int i = 0; i < businessReview.length - 1; i++) {
-//            String id = String.valueOf(businessReview[i].get("business_id")).substring(1, 23);
-//
-//            String unfilteredReview = String.join( " ", String.valueOf(businessReview[i].get("text")).split("[^a-zA-Z0-9'&]+"));
-//            String review = "placeholder place";
-//            if (unfilteredReview.length() != 0) {
-//                review = unfilteredReview.substring(1);
-//            }
-//            mapOfBusiness.put(id, new Business(id, review));
-//        }
-
         //3. Load Serialized Data
         if (Files.exists(Path.of(System.getProperty("user.dir") + "/SerializedDocuments/" + inputtedID))) {
             for (Business business : mapOfBusiness.values()) {
@@ -242,67 +199,204 @@ public class InfoRetrieval {
         return sortedScores;
     }
 
+
+    private static void removeDuplicates() {
+        HashMap<String, Business> uniqueBusinessess = new HashMap<>();
+        System.out.println("business size: " + mapOfBusiness.size());
+        for (Business business : mapOfBusiness.values()) {
+            if (uniqueBusinessess.containsValue(business.getName())) {
+                mapOfBusiness.remove(business.getId());
+            } else {
+                uniqueBusinessess.put(business.getId(), business);
+            }
+        }
+        System.out.println("business size: " + mapOfBusiness.size());
+    }
+
     private static void findKMeans() {
+        //1. Set up variables
         int K_VALUE = 5;
         int MAX_ARRAY = 2000;
-        HashMap<String, Business> mapOfBusinessCopy = mapOfBusiness;
+        int TOTAL_CLUSTER_REITERATIONS = 100;
+        int clusterIndex = -1;
+
+        HashMap<Double, HashMap<Integer, String>> collectionOfClusteredBusiness = new HashMap<>();
+        ArrayList<Object[]> clusteredBusinessesIndex = new ArrayList<>();
+
+
         ArrayList<Double> clusterZero = new ArrayList<>();
         ArrayList<Double> clusterOne = new ArrayList<>();
         ArrayList<Double> clusterTwo = new ArrayList<>();
         ArrayList<Double> clusterThree = new ArrayList<>();
         ArrayList<Double> clusterFour = new ArrayList<>();
 
+        double clusterZeroSum = 0;
+        double clusterOneSum = 0;
+        double clusterTwoSum = 0;
+        double clusterThreeSum = 0;
+        double clusterFourSum = 0;
+
         List<Double> allCosineSimilaries = new ArrayList<>();
-        for (Business x : mapOfBusinessCopy.values()) {
+        HashMap<Integer, String> hashMapContainingClusters = new HashMap<>();
+
+        for (Business x : mapOfBusiness.values()) {
             allCosineSimilaries.add(x.getSimilarityValue());
         }
-        Random rand = new Random();
-        List<Double> clusterCentroids = new ArrayList<>();
-        for (int i = 0; i < K_VALUE; i++) {
-            int index = rand.nextInt(allCosineSimilaries.size());
-            clusterCentroids.add(allCosineSimilaries.get(index));
-            allCosineSimilaries.remove(index);
-        }
-        double[] distance = new double[K_VALUE];
-        double closestCluster = MAX_VALUE;
-        String businessID = "placeholder";
-        int clusterIndex = -1;
-        for (Business business: mapOfBusinessCopy.values()) {
-            double businessPosition = business.getSimilarityValue();
-            for (int i = 0; i < K_VALUE; i++) {
-                distance[i] = Math.abs(businessPosition - clusterCentroids.get(i));
-                if (closestCluster > distance[i]) {
-                    if (i == 0 && (clusterZero.size() < MAX_ARRAY)) {
-                        closestCluster = distance[i];
-                        clusterIndex = i;
-                        businessID = business.getId();
-                    } else if (i == 1 && (clusterOne.size() < MAX_ARRAY)) {
-                        closestCluster = distance[i];
-                        clusterIndex = i;
-                        businessID = business.getId();
-                    } else if (i == 2 && (clusterTwo.size() < MAX_ARRAY)) {
-                        closestCluster = distance[i];
-                        clusterIndex = i;
-                        businessID = business.getId();
-                    } else if (i == 3 && (clusterThree.size() < MAX_ARRAY)) {
-                        closestCluster = distance[i];
-                        clusterIndex = i;
-                        businessID = business.getId();
-                    } else if (i == 4 && (clusterFour.size() < MAX_ARRAY)) {
-                        closestCluster = distance[i];
-                        clusterIndex = i;
-                        businessID = business.getId();
+
+        for (int i = 0; i < TOTAL_CLUSTER_REITERATIONS; i++) {
+            HashMap<String, Business> mapOfBusinessCopy = new HashMap<>();
+            mapOfBusinessCopy = copyHashMap(mapOfBusinessCopy);
+
+            for (Business x : mapOfBusiness.values()) {
+                x.setInCluster(false);
+            }
+
+            clusterZero.clear();
+            clusterOne.clear();
+            clusterTwo.clear();
+            clusterThree.clear();
+            clusterFour.clear();
+
+            clusterZeroSum = 0;
+            clusterOneSum = 0;
+            clusterTwoSum = 0;
+            clusterThreeSum = 0;
+            clusterFourSum = 0;
+
+            double[] distance = new double[K_VALUE];
+            String businessID = "placeholder";
+
+            Random rand = new Random(System.currentTimeMillis());
+            List<Double> clusterCentroids = new ArrayList<>();
+            for (int k = 0; k < K_VALUE; k++) {
+                int index = rand.nextInt(allCosineSimilaries.size());
+                clusterCentroids.add(allCosineSimilaries.get(index));
+                allCosineSimilaries.remove(index);
+            }
+
+            for (Business business : mapOfBusinessCopy.values()) {
+                if (!business.isInCluster()) {
+                    double businessPosition = business.getSimilarityValue();
+                    double closestCluster = MAX_VALUE;
+                    for (int j = 0; j < clusterCentroids.size(); j++) {
+                        distance[j] = Math.abs(clusterCentroids.get(j) - businessPosition);
+                        if (closestCluster > distance[j]) {
+                            if (j == 0 && (clusterZero.size() < MAX_ARRAY)) {
+                                closestCluster = distance[j];
+                                clusterIndex = j;
+                                businessID = business.getId();
+                            } else if (j == 1 && (clusterOne.size() < MAX_ARRAY)) {
+                                closestCluster = distance[j];
+                                clusterIndex = j;
+                                businessID = business.getId();
+                            } else if (j == 2 && (clusterTwo.size() < MAX_ARRAY)) {
+                                closestCluster = distance[j];
+                                clusterIndex = j;
+                                businessID = business.getId();
+                            } else if (j == 3 && (clusterThree.size() < MAX_ARRAY)) {
+                                closestCluster = distance[j];
+                                clusterIndex = j;
+                                businessID = business.getId();
+                            } else if (j == 4 && (clusterFour.size() < MAX_ARRAY)) {
+                                closestCluster = distance[j];
+                                clusterIndex = j;
+                                businessID = business.getId();
+                            }
+                        }
+                    }
+                    switch (clusterIndex) {
+                        case 0 -> {
+                            clusterZero.add(closestCluster);
+                            hashMapContainingClusters.put(0, businessID);
+                            break;
+                        }
+                        case 1 -> {
+                            clusterOne.add(closestCluster);
+                            hashMapContainingClusters.put(1, businessID);
+                            break;
+                        }
+                        case 2 -> {
+                            clusterTwo.add(closestCluster);
+                            hashMapContainingClusters.put(2, businessID);
+                            break;
+                        }
+                        case 3 -> {
+                            clusterThree.add(closestCluster);
+                            hashMapContainingClusters.put(3, businessID);
+                            break;
+                        }
+                        case 4 -> {
+                            clusterFour.add(closestCluster);
+                            hashMapContainingClusters.put(4, businessID);
+                            break;
+                        }
                     }
                 }
             }
-            switch (clusterIndex) {
-                case 0 -> { clusterZero.add(closestCluster); mapOfBusiness.get(businessID).setCluster(0); }
-                case 1 -> { clusterOne.add(closestCluster); mapOfBusiness.get(businessID).setCluster(1); }
-                case 2 -> { clusterTwo.add(closestCluster); mapOfBusiness.get(businessID).setCluster(2); }
-                case 3 -> { clusterThree.add(closestCluster); mapOfBusiness.get(businessID).setCluster(3); }
-                case 4 -> { clusterFour.add(closestCluster); mapOfBusiness.get(businessID).setCluster(4); }
+
+            //Get the total cluster
+            for (int j = 0; j < MAX_ARRAY; j++) {
+                clusterZeroSum += clusterZero.get(j);
+                clusterOneSum += clusterOne.get(j);
+                clusterTwoSum += clusterTwo.get(j);
+                clusterThreeSum += clusterThree.get(j);
+                clusterFourSum += clusterFour.get(j);
             }
-            closestCluster = MAX_VALUE;
+
+            //Store it
+            collectionOfClusteredBusiness.put(clusterZeroSum, hashMapContainingClusters);
+            collectionOfClusteredBusiness.put(clusterOneSum, hashMapContainingClusters);
+            collectionOfClusteredBusiness.put(clusterTwoSum, hashMapContainingClusters);
+            collectionOfClusteredBusiness.put(clusterThreeSum, hashMapContainingClusters);
+            collectionOfClusteredBusiness.put(clusterFourSum, hashMapContainingClusters);
         }
+
+        // System.out.println(collectionOfClusteredBusiness);
+        // Use the collection to find the five smallest values
+        ArrayList<Double> clusterSumsSorted = new ArrayList<>(collectionOfClusteredBusiness.keySet());
+        Collections.sort(clusterSumsSorted);
+        System.out.println(clusterSumsSorted);
+
+        clusterZero.clear();
+        clusterOne.clear();
+        clusterTwo.clear();
+        clusterThree.clear();
+        clusterFour.clear();
+
+        boolean clusterZeroFull = false;
+        boolean clusterOneFull = false;
+        boolean clusterTwoFull = false;
+        boolean clusterThreeFull = false;
+        boolean clusterFourFull = false;
+
+//        System.out.println(collectionOfClusteredBusiness.get(clusterSumsSorted.get(0)));
+//        Set<String> businessWithClusters = new HashSet<>();
+//        businessWithClusters.addAll(collectionOfClusteredBusiness.get(clusterSumsSorted.get(0)).keySet());
+//        System.out.println(businessWithClusters + "" + businessWithClusters.size());
+//        int numOfClustersRemaining = 4;
+//        for (int i = 0; i < clusterSumsSorted.size(); i++) {
+//
+//
+//            HashMap<String, Business> clusterdBusiness = collectionOfClusteredBusiness.get(clusterSumsSorted.get(i));
+//            for (Business x : clusterdBusiness.values()) {
+//                if (!businessWithClusters.contains(x.getId())) {
+//                    mapOfBusiness.get(x.getId()).setCluster(i);
+//                    businessWithClusters.add(x.getId());
+//                    clusterZeroFull = true;
+//                }
+//            }
+//        }
+//        System.out.println(clusterSumsSorted);
+
+
+
+    }
+    private static HashMap<String, Business> copyHashMap(HashMap<String, Business> temp) {
+        for (Business x : mapOfBusiness.values()) {
+            temp.put(x.getId(), x.getBusiness());
+        }
+        return temp;
     }
 }
+
+
