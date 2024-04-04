@@ -16,6 +16,7 @@ public class Business implements Serializable {
     private HashMap<String, Double> tfIDF;
     private double similarityValue;
     private int cluster; // 0 - 4
+    private boolean inCluster = false;
 
     public Business(String id, String review) {
         this.id = id;
@@ -23,10 +24,18 @@ public class Business implements Serializable {
         termCount = new HT();
         tfIDF = new HashMap<>();
     }
+
+    public boolean isInCluster() {
+        return inCluster;
+    }
+
+    public void setInCluster(boolean inCluster) {
+        this.inCluster = inCluster;
+    }
+
     public int getCluster() {
         return cluster;
     }
-
     public void setCluster(int cluster) {
         this.cluster = cluster;
     }
@@ -123,12 +132,16 @@ public class Business implements Serializable {
             throw new RuntimeException(e);
         }
     }
-    private void setBusiness(Business business) {
+    public void setBusiness(Business business) {
         this.name = business.name;
         this.id = business.id;
         this.review = business.review;
         this.termCount = business.termCount;
         this.tfIDF = business.tfIDF;
         this.termFrequency = business.termFrequency;
+    }
+
+    public Business getBusiness() {
+        return this;
     }
 }

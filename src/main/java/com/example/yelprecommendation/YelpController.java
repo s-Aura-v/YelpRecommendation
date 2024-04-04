@@ -114,7 +114,6 @@ public class YelpController {
     private void submitRequest(ActionEvent event) throws IOException {
         String businessName = inputButton.getText();
         System.out.println(businessName);
-        System.out.println(businessName.getClass());
         String businessID = getNameFromID(businessName);
         System.out.println(businessID);
         mapOfBusiness = InfoRetrieval.tfIDF(businessID);
