@@ -25,8 +25,14 @@ public class InfoRetrieval {
             String line;
             while ((line = buffRead.readLine()) != null) {
                 JsonObject business = gson.fromJson(line, JsonObject.class);
+
                 String name = String.join(" ", String.valueOf(business.get("name")).split("[^a-zA-Z0-9'&]+")).substring(1);
                 String id =  String.valueOf(business.get("business_id")).substring(1,23);
+                String longitude = String.valueOf(business.get("longitude"));
+                String latitude = String.valueOf(business.get("latitude"));
+                String businessInfo = name + ":" + latitude + "," + longitude;
+
+                System.out.println(businessInfo);
                 businessNames.put(id, name);
                 documentSize++;
             }
@@ -155,7 +161,7 @@ public class InfoRetrieval {
         return btree;
     }
 
-     private static HashMap<String, Business> cosineSimilarity(String businessID) throws IOException {
+    private static HashMap<String, Business> cosineSimilarity(String businessID) throws IOException {
         // Cosine Similarity = (vector a * vector b) / (sqrt(vectorA^2) sqrt(vectorB^2))
         Business userInput = mapOfBusiness.get(businessID);
         HashMap<String, Double> similarityScores = new HashMap<>();
@@ -180,23 +186,23 @@ public class InfoRetrieval {
             business.setSimilarityValue(cosineSimilarity);
         }
         // Sort the similarity scores
-         HashMap<String, Double> scoresWithName = new HashMap<>();
-         for (String id : similarityScores.keySet()) {
-             mapOfBusiness.get(id).setSimilarityValue(similarityScores.get(id));
-             String name = businessNames.get(mapOfBusiness.get(id).getId());
-             scoresWithName.put(name, similarityScores.get(id));
-         }
-         sortedScores = new ArrayList<>(scoresWithName.entrySet());
-         sortedScores.sort((entry1, entry2) -> entry2.getValue().compareTo(entry1.getValue()));
-         findKMeans();
-         return mapOfBusiness;
+        HashMap<String, Double> scoresWithName = new HashMap<>();
+        for (String id : similarityScores.keySet()) {
+            mapOfBusiness.get(id).setSimilarityValue(similarityScores.get(id));
+            String name = businessNames.get(mapOfBusiness.get(id).getId());
+            scoresWithName.put(name, similarityScores.get(id));
+        }
+        sortedScores = new ArrayList<>(scoresWithName.entrySet());
+        sortedScores.sort((entry1, entry2) -> entry2.getValue().compareTo(entry1.getValue()));
+        findKMeans();
+        return mapOfBusiness;
     }
 
     public static List<Map.Entry<String, Double>> getSortedScores() {
         return sortedScores;
     }
 
-//    private static void removeDuplicates() {
+    //    private static void removeDuplicates() {
 //        HashMap<String, Business> uniqueBusinessess = new HashMap<>();
 //        for (Business business : mapOfBusiness.values()) {
 //            if (uniqueBusinessess.containsValue(business.getName())) {
@@ -369,5 +375,3 @@ public class InfoRetrieval {
     }
 
 }
-
-

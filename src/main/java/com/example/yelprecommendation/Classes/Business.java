@@ -1,8 +1,6 @@
 package com.example.yelprecommendation.Classes;
 
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.HashMap;
 
 public class Business implements Serializable {
@@ -16,7 +14,8 @@ public class Business implements Serializable {
     private HashMap<String, Double> tfIDF;
     private double similarityValue;
     private int cluster; // 0 - 4
-    private boolean inCluster = false;
+    private double latitude;
+    private double longitude;
 
     public Business(String id, String review) {
         this.id = id;
@@ -25,12 +24,20 @@ public class Business implements Serializable {
         tfIDF = new HashMap<>();
     }
 
-    public boolean isInCluster() {
-        return inCluster;
+    public double getLatitude() {
+        return latitude;
     }
 
-    public void setInCluster(boolean inCluster) {
-        this.inCluster = inCluster;
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
     }
 
     public int getCluster() {
