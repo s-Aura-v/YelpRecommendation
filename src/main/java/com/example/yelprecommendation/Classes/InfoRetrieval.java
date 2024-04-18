@@ -2,11 +2,13 @@ package com.example.yelprecommendation.Classes;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+
 import java.io.*;
 import java.lang.reflect.Array;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
+
 import static java.lang.Double.MAX_VALUE;
 
 public class InfoRetrieval {
@@ -202,11 +204,8 @@ public class InfoRetrieval {
         sortedScores = new ArrayList<>(scoresWithName.entrySet());
         sortedScores.sort((entry1, entry2) -> entry2.getValue().compareTo(entry1.getValue()));
         findKMeans();
-        randomBusinessGenerator(businessID);
-
-//        geographicCluster();
-
-
+//        randomBusinessGenerator(businessID);
+        geographicCluster(businessID);
         return mapOfBusiness;
     }
 
@@ -386,61 +385,68 @@ public class InfoRetrieval {
         }
     }
 
-//    public static void geographicCluster() {
-//        // Control business is the name of the business that we'll try to find the four closest geographic location for
-//        Random r = new Random();
-//        HashMap<String, Double> closestBusiness = new HashMap<>();
-//        for (Business controlBusiness : mapOfBusiness.values() ) {
-//            double latDistance = 0;
-//            double longDistance = 0;
-//            closestBusiness.clear();
-//            for (Business experimentBusiness : mapOfBusiness.values()) {
-//                double controlLat = controlBusiness.getLatitude();
-//                double controlLong = controlBusiness.getLongitude();
-//                double experimentLat = experimentBusiness.getLatitude();
-//                double experimentLong = experimentBusiness.getLongitude();
-//
-//                // Radians
-//                latDistance = ( controlLat - experimentLat ) * (Math.PI / 180);
-//                longDistance = ( controlLong - experimentLong ) * (Math.PI / 180);
-//                controlLat = (controlLat) * (Math.PI / 180);
-//                experimentLat = (experimentLat) * (Math.PI / 180);
-//
-//                //Apply Formula
-//                double a = Math.pow(Math.sin(latDistance / 2), 2) +
-//                        Math.pow(Math.sin(longDistance / 2), 2) *
-//                                Math.cos(controlLat) * Math.cos(experimentLat);
-//                double rad = 6371;
-//                double c = 2 * Math.asin(Math.sqrt(a));
-//                double distance = c * rad;
-//                closestBusiness.put(experimentBusiness.getId(), distance);
-//            }
-////            ArrayList<Map.Entry<String, Double>> closestBusinessSorted = new ArrayList<>(closestBusiness.entrySet());
-////            closestBusinessSorted.sort((entry1, entry2) -> entry2.getValue().compareTo(entry1.getValue()));
-////            for (int i = 0; i < 4; i++) {
-////                controlBusiness.setClosestBusiness(closestBusinessSorted.get(r.nextInt()), distance);
-//            }
-//
-//            for (Business x : mapOfBusiness.values()) {
-//                System.out.println(x.getClosestBusiness());
-//            }
-//        }
+    public static void geographicCluster(String id) {
+        // Control business is the name of the business that we'll try to find the four closest geographic location for
+        Random r = new Random();
+        HashMap<String, Double> closestBusiness = new HashMap<>();
+        Business controlBusiness = mapOfBusiness.get(id);
+        int cluster = mapOfBusiness.get(id).getCluster();
+        double latDistance = 0;
+        double longDistance = 0;
+        closestBusiness.clear();
+        for (Business experimentBusiness : mapOfBusiness.values()) {
+            double controlLat = controlBusiness.getLatitude();
+            double controlLong = controlBusiness.getLongitude();
+            double experimentLat = experimentBusiness.getLatitude();
+            double experimentLong = experimentBusiness.getLongitude();
+
+            // Radians
+            latDistance = (controlLat - experimentLat) * (Math.PI / 180);
+            longDistance = (controlLong - experimentLong) * (Math.PI / 180);
+            controlLat = (controlLat) * (Math.PI / 180);
+            experimentLat = (experimentLat) * (Math.PI / 180);
+
+            //Apply Formula
+            double a = Math.pow(Math.sin(latDistance / 2), 2) +
+                    Math.pow(Math.sin(longDistance / 2), 2) *
+                            Math.cos(controlLat) * Math.cos(experimentLat);
+            double rad = 6371;
+            double c = 2 * Math.asin(Math.sqrt(a));
+            double distance = c * rad;
+            closestBusiness.put(experimentBusiness.getId(), distance);
+        }
+
+        int index = 0;
+        for (String orderedBusinessID : closestBusiness.keySet()) {
+            if (mapOfBusiness.get(orderedBusinessID).getCluster() == cluster) {
+                mapOfBusiness.get(id).setClosestBusiness(orderedBusinessID, closestBusiness.get(orderedBusinessID));
+                index++;
+            }
+            if (index > 3) {
+                break;
+            }
+        }
+        System.out.println(mapOfBusiness.get(id));
+    }
+}
 
     /*
-    Generate 1000 businesses that will be sorted into the closest 4
-    Used for randomness. Don't want all business to be from the same location
-
-    Note: These shuffle the business every time. Maybe I should keep them the same.
+    Deprecated, but kept for memory; redundant because I have 5 clusters that already randomizes
      */
-    public static void randomBusinessGenerator(String id) {
-        Random r = new Random(System.currentTimeMillis());
-        List<Business> shuffledBusiness = new ArrayList<Business>(mapOfBusiness.values());
-        Collections.shuffle(shuffledBusiness);
-        String[] randomizedBusiness =  new String[1000];
-        for (int i = 0; i < 1000; i++) {
-            randomizedBusiness[i] = shuffledBusiness.get(i).getId();
-            System.out.println(randomizedBusiness[i]);
-        }
-    }
+//    /*
+//    Generate 1000 businesses that will be sorted into the closest 4
+//    Used for randomness. Don't want all business to be from the same location
+//
+//    Note: These shuffle the business every time. Maybe I should keep them the same.
+//     */
+//    public static void randomBusinessGenerator(String id) {
+//        Random r = new Random(System.currentTimeMillis());
+//        List<Business> shuffledBusiness = new ArrayList<Business>(mapOfBusiness.values());
+//        Collections.shuffle(shuffledBusiness);
+//        String[] randomizedBusiness =  new String[1000];
+//        for (int i = 0; i < 1000; i++) {
+//            randomizedBusiness[i] = shuffledBusiness.get(i).getId();
+//            System.out.println(randomizedBusiness[i]);
+//        }
+//    }
 
-}

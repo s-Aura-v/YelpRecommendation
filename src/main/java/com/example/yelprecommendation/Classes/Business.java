@@ -96,10 +96,11 @@ public class Business implements Serializable {
     @Override
     public String toString() {
         return "Business{" +
-                "review='" + this.review + '\'' +
-                ", id='" + this.id + '\'' +
-                ", name='" + this.name + '\'' +
-                ", similarity=" + this.similarityValue + '\'' +
+                "review='" + this.review + '\n' +
+                ", id='" + this.id + '\n' +
+                ", name='" + this.name + '\n' +
+                ", similarity=" + this.similarityValue + '\n' +
+                ", closestBusiness: " + closestBusiness + '\n' +
                 '}';
     }
     public void serializeBusiness(String inputtedID) throws IOException {
