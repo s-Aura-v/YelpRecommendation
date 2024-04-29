@@ -17,6 +17,8 @@ public class Business implements Serializable {
     private double latitude;
     private double longitude;
     private HashMap<String, Double> closestBusiness;
+    private DisjointUnionSets closestBusinessSet;
+    private Graph businessGraph;
 
     public Business(String id, String review) {
         this.id = id;
@@ -26,12 +28,21 @@ public class Business implements Serializable {
         closestBusiness = new HashMap<>();
     }
 
+    public Graph getBusinessGraph() {
+        return businessGraph;
+    }
+
+    public void setBusinessGraph(Graph businessGraph) {
+        this.businessGraph = businessGraph;
+    }
+
     public HashMap<String, Double> getClosestBusiness() {
         return closestBusiness;
     }
 
     public void setClosestBusiness(String businessID, double distance) {
         closestBusiness.put(businessID, distance);
+        setClosestBusinessSet();
     }
 
     public double getLatitude() {
@@ -143,7 +154,6 @@ public class Business implements Serializable {
             business = (Business) in.readObject();
             in.close();
             fileIn.close();
-            // TODO: Ask DL about this way to set class to itself...
             setBusiness(business);
             return business;
         } catch (IOException | ClassNotFoundException e) {
@@ -159,7 +169,21 @@ public class Business implements Serializable {
         this.termFrequency = business.termFrequency;
     }
 
+    public void setClosestBusinessSet() {
+
+        String[] elements = closestBusiness.keySet().toArray(new String[0]);
+        if (elements.length == 4) {
+            closestBusinessSet = new DisjointUnionSets(elements);
+        }
+    }
+
+    public DisjointUnionSets getClosestBusinessSet(DisjointUnionSets closestBusinessSet) {
+        return closestBusinessSet;
+    }
+
     public Business getBusiness() {
         return this;
     }
+
+
 }

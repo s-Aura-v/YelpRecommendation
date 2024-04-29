@@ -78,7 +78,7 @@ public class InfoRetrieval {
                 mapOfBusiness.get(id).setLongitude(longitude);
             }
         }
-//        removeDuplicates();
+        removeDuplicates();
     }
 
     public static HashMap<String, Business> tfIDF(String inputtedID) throws IOException {
@@ -213,16 +213,22 @@ public class InfoRetrieval {
         return sortedScores;
     }
 
-    //    private static void removeDuplicates() {
-//        HashMap<String, Business> uniqueBusinessess = new HashMap<>();
-//        for (Business business : mapOfBusiness.values()) {
-//            if (uniqueBusinessess.containsValue(business.getName())) {
-//                mapOfBusiness.remove(business.getId());
-//            } else {
-//                uniqueBusinessess.put(business.getId(), business);
-//            }
-//        }
-//    }
+    private static void removeDuplicates() {
+        ArrayList<String> uniqueBusiness = new ArrayList<>();
+        ArrayList<String> notUniqueBusiness = new ArrayList<>();
+        for (Business business : mapOfBusiness.values()) {
+            if (uniqueBusiness.contains(business.getName())) {
+                notUniqueBusiness.add(business.getId());
+            } else {
+                uniqueBusiness.add(business.getName());
+            }
+        }
+        for (int i = 0; i < notUniqueBusiness.size(); i++) {
+            mapOfBusiness.remove(notUniqueBusiness.get(i));
+        }
+        System.out.println(mapOfBusiness.size());
+    }
+
     private static void findKMeans() {
         int TOTAL_CLUSTERS = 5;
         int MAX_ARRAY_SIZE = 2000;
@@ -338,11 +344,21 @@ public class InfoRetrieval {
 
 //             Get the total size of the clusters: To be used to find the most accurate clusters
             for (int j = 0; j < MAX_ARRAY_SIZE; j++) {
-                clusterZeroSum += clusterZero.get(j);
-                clusterOneSum += clusterOne.get(j);
-                clusterTwoSum += clusterTwo.get(j);
-                clusterThreeSum += clusterThree.get(j);
-                clusterFourSum += clusterFour.get(j);
+                if (j < clusterZero.size()) {
+                    clusterZeroSum += clusterZero.get(j);
+                }
+                if (j < clusterOne.size()) {
+                    clusterOneSum += clusterOne.get(j);
+                }
+                if (j < clusterTwo.size()) {
+                    clusterTwoSum += clusterTwo.get(j);
+                }
+                if (j < clusterThree.size()) {
+                    clusterThreeSum += clusterThree.get(j);
+                }
+                if (j < clusterFour.size()) {
+                    clusterFourSum += clusterFour.get(j);
+                }
             }
             double totalSum = clusterZeroSum + clusterOneSum + clusterTwoSum + clusterThreeSum + clusterFourSum;
             /*
@@ -380,7 +396,9 @@ public class InfoRetrieval {
             } else if (i < 7999) {
                 mapOfBusiness.get(businessIDList.get(i)).setCluster(3);
             } else if (i < 9999) {
-                mapOfBusiness.get(businessIDList.get(i)).setCluster(4);
+                if (i < businessIDList.size()) {
+                    mapOfBusiness.get(businessIDList.get(i)).setCluster(4);
+                }
             }
         }
     }
@@ -416,19 +434,91 @@ public class InfoRetrieval {
             closestBusiness.put(experimentBusiness.getId(), distance);
         }
 
-        int index = 0;
-        for (String orderedBusinessID : closestBusiness.keySet()) {
-            if (mapOfBusiness.get(orderedBusinessID).getCluster() == cluster) {
-                mapOfBusiness.get(id).setClosestBusiness(orderedBusinessID, closestBusiness.get(orderedBusinessID));
-                index++;
+        ArrayList<Double> sortedDistanceList = new ArrayList<>();
+        sortedDistanceList.addAll(closestBusiness.values());
+        Collections.sort(sortedDistanceList);
+
+        for (int index = 0; index < sortedDistanceList.size(); index += 125) {
+            for (String orderedBusinessID : mapOfBusiness.keySet()) {
+                if (closestBusiness.get(orderedBusinessID) == sortedDistanceList.get(index)) {
+                    if (!orderedBusinessID.equals(controlBusiness.getId())) {
+                        mapOfBusiness.get(controlBusiness.getId()).setClosestBusiness(orderedBusinessID, sortedDistanceList.get(index));
+                    }
+                }
             }
-            if (index > 3) {
+            if (mapOfBusiness.get(controlBusiness.getId()).getClosestBusiness().size() > 3) {
                 break;
             }
         }
-        System.out.println(mapOfBusiness.get(id));
+        // TODO : uncomment for clarity
+//        System.out.println(controlBusiness + " : " + mapOfBusiness.get(controlBusiness.getId()).getClosestBusiness());
     }
+
+    public void findPath(String subject, String destination) {
+        Business startingBusiness = mapOfBusiness.get(subject);
+        Business destinationBusiness = mapOfBusiness.get(destination);
+
+    }
+
+
+    public static void createPaths(String rootBusiness) {
+        int SIZE = 5;
+        int SOURCE = 0;
+        Business destination = mapOfBusiness.get(rootBusiness);
+        System.out.println(rootBusiness);
+
+        List<List<Node>> adj = new ArrayList<List<Node>>();
+        for (int i = 0; i < SIZE; i++) {
+            List<Node> item = new ArrayList<Node>();
+            adj.add(item);
+        }
+
+        int index = 1;
+        for (Double x : destination.getClosestBusiness().values()) {
+            adj.get(0).add(new Node(index, x.intValue()));
+            index++;
+        }
+
+        Graph dpq = new Graph(SIZE);
+        dpq.dijkstra(adj, SOURCE);
+
+        mapOfBusiness.get(rootBusiness).setBusinessGraph(dpq);
+
+        for (int i = 0; i < dpq.dist.length; i++) {
+            System.out.println(SOURCE + " to " + i + " is "
+                    + dpq.dist[i]);
+        }
+    }
+
+    public static void findPath() {
+        //rZ4WHc8fcopYKCGi7ahwzA = Flying J Travel Center
+        String startingID = "IX25aSHBIfYd9fbSKlP4qg";
+        String destinationID = "rZ4WHc8fcopYKCGi7ahwzA";
+
+        Graph startingGraph = mapOfBusiness.get("IX25aSHBIfYd9fbSKlP4qg").getBusinessGraph();
+        Graph destinationGraph = mapOfBusiness.get("rZ4WHc8fcopYKCGi7ahwzA").getBusinessGraph();
+
+
+    }
+    //DEBUG:
+    public static void businessCluster(String id) {
+        System.out.println("The four businesses are: ");
+        geographicCluster(id);
+        int cluster = mapOfBusiness.get(id).getCluster();
+        for (Business x : mapOfBusiness.values()) {
+            if (x.getCluster() == cluster) {
+                geographicCluster(x.getId());
+            }
+        }
+    }
+
+
+
 }
+
+
+//        Business destination = mapOfBusiness.get(destinationID);
+
 
     /*
     Deprecated, but kept for memory; redundant because I have 5 clusters that already randomizes

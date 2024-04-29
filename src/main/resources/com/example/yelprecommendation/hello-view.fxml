@@ -6,6 +6,8 @@
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.TitledPane?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -14,93 +16,126 @@
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="694.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.yelprecommendation.YelpController">
     <children>
-        <TitledPane fx:id="title" animated="false" layoutX="6.0" layoutY="7.0" prefHeight="27.0" prefWidth="619.0" text="Yelp Recommendation System" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <TabPane layoutY="-1.0" prefHeight="400.0" prefWidth="694.0" tabClosingPolicy="UNAVAILABLE">
+        <tabs>
+          <Tab text="Similarity">
             <content>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                          <TitledPane fx:id="title" animated="false" prefHeight="27.0" prefWidth="619.0" text="Yelp Recommendation System" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                              <content>
+                                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                              </content>
+                          </TitledPane>
+                          <SplitPane dividerPositions="0.4206989247311828" orientation="VERTICAL" prefHeight="374.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="26.0">
+                              <items>
+                                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+                                      <children>
+                                          <SplitPane dividerPositions="0.4036231884057971" prefHeight="133.0" prefWidth="598.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                              <items>
+                                                  <AnchorPane fx:id="userInputAnchor" minHeight="0.0" minWidth="0.0" prefHeight="151.0" prefWidth="232.0">
+                                                      <children>
+                                                          <Text fx:id="inputLabel" layoutX="8.0" layoutY="19.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Enter Business Name:" AnchorPane.leftAnchor="8.0" />
+                                                          <Button fx:id="submitUserInput" layoutX="8.0" layoutY="58.0" mnemonicParsing="false" onAction="#submitRequest" prefHeight="15.0" prefWidth="45.0" text="Submit" AnchorPane.leftAnchor="8.0">
+                                                              <font>
+                                                                  <Font size="10.0" />
+                                                              </font>
+                                                          </Button>
+                                                <TextField fx:id="inputButton" layoutX="8.0" layoutY="27.0" />
+                                                      </children>
+                                                  </AnchorPane>
+                                                  <AnchorPane fx:id="textOutputAnchor" minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+                                                      <children>
+                                                          <SplitPane dividerPositions="0.5184729064039408" layoutX="35.0" layoutY="-23.0" prefHeight="151.0" prefWidth="441.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                              <items>
+                                                                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="149.0" prefWidth="205.0">
+                                                                      <children>
+                                                                          <Text fx:id="recommendationLabel" layoutX="34.0" layoutY="18.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Recommendation 1" AnchorPane.leftAnchor="40.0" AnchorPane.topAnchor="5.0" />
+                                                            <Label fx:id="businessName" alignment="TOP_LEFT" layoutX="14.0" layoutY="27.0" prefHeight="38.0" prefWidth="158.0" text="Business Name:" AnchorPane.topAnchor="29.0" />
+                                                            <Label fx:id="businessScore" alignment="TOP_LEFT" layoutX="14.0" layoutY="81.0" prefHeight="38.0" prefWidth="158.0" text="Similiarity Score:" AnchorPane.bottomAnchor="39.0" />
+                                                            <Label fx:id="clusterLabel" alignment="TOP_LEFT" layoutX="13.0" layoutY="108.0" prefHeight="27.0" prefWidth="158.0" text="Cluster:" AnchorPane.bottomAnchor="8.0" />
+                                                                      </children>
+                                                                  </AnchorPane>
+                                                                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="149.0" prefWidth="198.0">
+                                                                      <children>
+                                                                          <Text fx:id="recommendationLabel2" layoutX="49.0" layoutY="18.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Recommendation 2" AnchorPane.leftAnchor="40.0" AnchorPane.rightAnchor="44.65771484375" AnchorPane.topAnchor="5.0" />
+                                                            <Label fx:id="businessNameJr" alignment="TOP_LEFT" layoutX="21.0" layoutY="29.0" prefHeight="38.0" prefWidth="158.0" text="Business Name:" AnchorPane.topAnchor="29.0" />
+                                                            <Label fx:id="businessScoreJr" alignment="TOP_LEFT" layoutX="17.0" layoutY="75.0" prefHeight="38.0" prefWidth="158.0" text="Similiarity Score:" AnchorPane.bottomAnchor="36.0" />
+                                                            <Label fx:id="clusterLabelJr" alignment="TOP_LEFT" layoutX="21.0" layoutY="108.0" prefHeight="27.0" prefWidth="158.0" text="Cluster:" AnchorPane.bottomAnchor="8.0" />
+                                                                      </children>
+                                                                  </AnchorPane>
+                                                              </items>
+                                                          </SplitPane>
+                                                      </children>
+                                          </AnchorPane>
+                                              </items>
+                                          </SplitPane>
+                                      </children>
+                                  </AnchorPane>
+                                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="212.0" prefWidth="692.0">
+                                      <children>
+                                          <ListView fx:id="clusterZeroList" layoutX="27.0" layoutY="24.0" prefHeight="163.0" prefWidth="110.0" AnchorPane.leftAnchor="27.0" AnchorPane.topAnchor="24.0">
+                                              <contextMenu>
+                                                  <ContextMenu>
+                                                      <items>
+                                                          <MenuItem mnemonicParsing="false" text="Unspecified Action" />
+                                                      </items>
+                                                  </ContextMenu>
+                                              </contextMenu>
+                                          </ListView>
+                                          <ListView fx:id="clusterOneList" layoutX="212.0" layoutY="24.0" prefHeight="163.0" prefWidth="110.0" AnchorPane.leftAnchor="164.0" AnchorPane.topAnchor="24.0" />
+                                          <ListView fx:id="clusterTwoList" layoutX="332.0" layoutY="24.0" prefHeight="163.0" prefWidth="110.0" AnchorPane.leftAnchor="301.0" AnchorPane.topAnchor="24.0" />
+                                          <ListView fx:id="clusterThreeList" layoutX="439.0" layoutY="24.0" prefHeight="163.0" prefWidth="110.0" AnchorPane.topAnchor="24.0" />
+                                          <ListView fx:id="clusterFourList" layoutX="572.0" layoutY="24.0" prefHeight="163.0" prefWidth="110.0" AnchorPane.topAnchor="24.0" />
+                                    <Label fx:id="clusterZeroLabel" layoutX="56.0" layoutY="6.0" text="Cluster 0:" />
+                                    <Label fx:id="clusterOneLabel" layoutX="194.0" layoutY="6.0" text="Cluster 1:" />
+                                    <Label fx:id="clusterTwoLabel" layoutX="330.0" layoutY="6.0" text="Cluster 2:" />
+                                    <Label fx:id="clusterThreeLabel" layoutX="468.0" layoutY="6.0" text="Cluster 3:" />
+                                    <Label fx:id="clusterFourLabel" layoutX="601.0" layoutY="6.0" text="Cluster 4:" />
+                                      </children>
+                              </AnchorPane>
+                              </items>
+                          </SplitPane>
+                     </children>
+                  </AnchorPane>
             </content>
-        </TitledPane>
-        <SplitPane dividerPositions="0.4206989247311828" layoutX="14.0" layoutY="26.0" orientation="VERTICAL" prefHeight="374.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="26.0">
-            <items>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
-                    <children>
-                        <SplitPane dividerPositions="0.4036231884057971" prefHeight="133.0" prefWidth="598.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                            <items>
-                                <AnchorPane fx:id="userInputAnchor" minHeight="0.0" minWidth="0.0" prefHeight="151.0" prefWidth="232.0">
-                                    <children>
-                                        <Text fx:id="inputLabel" layoutX="8.0" layoutY="19.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Enter Business Name:" AnchorPane.leftAnchor="8.0" />
-                                        <Button fx:id="submitUserInput" layoutX="8.0" layoutY="58.0" mnemonicParsing="false" onAction="#submitRequest" prefHeight="15.0" prefWidth="45.0" text="Submit" AnchorPane.leftAnchor="8.0">
-                                            <font>
-                                                <Font size="10.0" />
-                                            </font>
-                                        </Button>
-                                        <Button fx:id="displayGraph" layoutX="196.0" layoutY="117.0" mnemonicParsing="false" text="Show Graph" AnchorPane.leftAnchor="196.0">
-                                            <font>
-                                                <Font size="10.0" />
-                                            </font>
-                                        </Button>
-                                        <Button fx:id="displayClusters" layoutX="8.0" layoutY="117.0" mnemonicParsing="false" text="Show Cluster">
-                                            <font>
-                                                <Font size="10.0" />
-                                            </font>
-                                        </Button>
-                                        <Text fx:id="functionLabel" layoutX="14.0" layoutY="101.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Functions:" AnchorPane.leftAnchor="14.0" />
-                              <Button fx:id="displayClusterInfo" layoutX="85.0" layoutY="117.0" mnemonicParsing="false" prefHeight="20.0" prefWidth="105.0" text="Show Cluster Info">
-                                 <font>
-                                    <Font size="10.0" />
-                                 </font>
-                              </Button>
-                              <TextField fx:id="inputButton" layoutX="8.0" layoutY="27.0" />
-                                    </children>
-                                </AnchorPane>
-                                <AnchorPane fx:id="textOutputAnchor" minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
-                                    <children>
-                                        <SplitPane dividerPositions="0.5184729064039408" layoutX="35.0" layoutY="-23.0" prefHeight="151.0" prefWidth="441.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                                            <items>
-                                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="149.0" prefWidth="205.0">
-                                                    <children>
-                                                        <Text fx:id="recommendationLabel" layoutX="34.0" layoutY="18.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Recommendation 1" AnchorPane.leftAnchor="40.0" AnchorPane.topAnchor="5.0" />
-                                          <Label fx:id="businessName" alignment="TOP_LEFT" layoutX="14.0" layoutY="27.0" prefHeight="38.0" prefWidth="158.0" text="Business Name:" AnchorPane.topAnchor="29.0" />
-                                          <Label fx:id="businessScore" alignment="TOP_LEFT" layoutX="14.0" layoutY="81.0" prefHeight="38.0" prefWidth="158.0" text="Similiarity Score:" AnchorPane.bottomAnchor="39.0" />
-                                          <Label fx:id="clusterLabel" alignment="TOP_LEFT" layoutX="13.0" layoutY="108.0" prefHeight="27.0" prefWidth="158.0" text="Cluster:" AnchorPane.bottomAnchor="8.0" />
-                                                    </children>
-                                                </AnchorPane>
-                                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="149.0" prefWidth="198.0">
-                                                    <children>
-                                                        <Text fx:id="recommendationLabel2" layoutX="49.0" layoutY="18.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Recommendation 2" AnchorPane.leftAnchor="40.0" AnchorPane.rightAnchor="44.65771484375" AnchorPane.topAnchor="5.0" />
-                                          <Label fx:id="businessNameJr" alignment="TOP_LEFT" layoutX="21.0" layoutY="29.0" prefHeight="38.0" prefWidth="158.0" text="Business Name:" AnchorPane.topAnchor="29.0" />
-                                          <Label fx:id="businessScoreJr" alignment="TOP_LEFT" layoutX="17.0" layoutY="75.0" prefHeight="38.0" prefWidth="158.0" text="Similiarity Score:" AnchorPane.bottomAnchor="36.0" />
-                                          <Label fx:id="clusterLabelJr" alignment="TOP_LEFT" layoutX="21.0" layoutY="108.0" prefHeight="27.0" prefWidth="158.0" text="Cluster:" AnchorPane.bottomAnchor="8.0" />
-                                                    </children>
-                                                </AnchorPane>
-                                            </items>
-                                        </SplitPane>
-                                    </children></AnchorPane>
-                            </items>
+          </Tab>
+          <Tab text="Disjoint Sets">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="0.0" prefWidth="200.0">
+                     <children>
+                        <SplitPane dividerPositions="0.3751814223512337" layoutY="-1.0" prefHeight="369.0" prefWidth="691.0">
+                          <items>
+                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+                                 <children>
+                                    <SplitPane dividerPositions="0.49711815561959655" layoutX="-2.0" layoutY="-1.0" orientation="VERTICAL" prefHeight="371.0" prefWidth="259.0">
+                                      <items>
+                                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+                                             <children>
+                                                <ListView fx:id="startingBusinessList" layoutX="10.0" layoutY="41.0" prefHeight="134.0" prefWidth="241.0" />
+                                                <Label fx:id="startingBusinessLabel" layoutX="50.0" layoutY="15.0" text="Choose the starting business " />
+                                             </children>
+                                          </AnchorPane>
+                                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+                                             <children>
+                                                <ListView fx:id="destinationBusinessList" layoutX="9.0" layoutY="38.0" prefHeight="134.0" prefWidth="241.0" />
+                                                <Label fx:id="destinationBusinessLabel" layoutX="68.0" layoutY="15.0" text="Choose the destination" />
+                                             </children>
+                                          </AnchorPane>
+                                      </items>
+                                    </SplitPane>
+                                 </children>
+                              </AnchorPane>
+                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="367.0" prefWidth="493.0">
+                                 <children>
+                                    <Label fx:id="pathDescLabel" layoutX="14.0" layoutY="21.0" text="The path is: " />
+                                 </children></AnchorPane>
+                          </items>
                         </SplitPane>
-                    </children>
-                </AnchorPane>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="207.0" prefWidth="711.0">
-                    <children>
-                        <ListView fx:id="clusterZeroList" layoutX="92.0" layoutY="24.0" prefHeight="180.0" prefWidth="110.0" AnchorPane.topAnchor="24.0">
-                            <contextMenu>
-                                <ContextMenu>
-                                    <items>
-                                        <MenuItem mnemonicParsing="false" text="Unspecified Action" />
-                                    </items>
-                                </ContextMenu>
-                            </contextMenu>
-                        </ListView>
-                        <ListView fx:id="clusterOneList" layoutX="212.0" layoutY="24.0" prefHeight="180.0" prefWidth="110.0" AnchorPane.topAnchor="24.0" />
-                        <ListView fx:id="clusterTwoList" layoutX="332.0" layoutY="24.0" prefHeight="180.0" prefWidth="110.0" AnchorPane.topAnchor="24.0" />
-                        <ListView fx:id="clusterThreeList" layoutX="452.0" layoutY="24.0" prefHeight="180.0" prefWidth="110.0" AnchorPane.topAnchor="24.0" />
-                        <ListView fx:id="clusterFourList" layoutX="572.0" layoutY="24.0" prefHeight="180.0" prefWidth="110.0" AnchorPane.topAnchor="24.0" />
-                  <Label fx:id="clusterZeroLabel" layoutX="121.0" layoutY="6.0" text="Cluster 0:" />
-                  <Label fx:id="clusterOneLabel" layoutX="241.0" layoutY="6.0" text="Cluster 1:" />
-                  <Label fx:id="clusterTwoLabel" layoutX="361.0" layoutY="6.0" text="Cluster 2:" />
-                  <Label fx:id="clusterThreeLabel" layoutX="481.0" layoutY="6.0" text="Cluster 3:" />
-                  <Label fx:id="clusterFourLabel" layoutX="601.0" layoutY="6.0" text="Cluster 4:" />
-                    </children></AnchorPane>
-            </items>
-        </SplitPane>
+                     </children></AnchorPane>
+            </content>
+          </Tab>
+        </tabs>
+      </TabPane>
     </children>
 </AnchorPane>
