@@ -405,7 +405,6 @@ public class InfoRetrieval {
 
     public static void geographicCluster(String id) {
         // Control business is the name of the business that we'll try to find the four closest geographic location for
-        Random r = new Random();
         HashMap<String, Double> closestBusiness = new HashMap<>();
         Business controlBusiness = mapOfBusiness.get(id);
         int cluster = mapOfBusiness.get(id).getCluster();
@@ -442,6 +441,7 @@ public class InfoRetrieval {
             for (String orderedBusinessID : mapOfBusiness.keySet()) {
                 if (closestBusiness.get(orderedBusinessID) == sortedDistanceList.get(index)) {
                     if (!orderedBusinessID.equals(controlBusiness.getId())) {
+                        // Used for Union-Find
                         mapOfBusiness.get(controlBusiness.getId()).setClosestBusiness(orderedBusinessID, sortedDistanceList.get(index));
                     }
                 }
@@ -450,6 +450,7 @@ public class InfoRetrieval {
                 break;
             }
         }
+
         // TODO : uncomment for clarity
 //        System.out.println(controlBusiness + " : " + mapOfBusiness.get(controlBusiness.getId()).getClosestBusiness());
     }
@@ -476,13 +477,17 @@ public class InfoRetrieval {
         int index = 1;
         for (Double x : destination.getClosestBusiness().values()) {
             adj.get(0).add(new Node(index, x.intValue()));
+            adj.get(1).add(new Node(index, x.intValue()));
+            adj.get(2).add(new Node(index, x.intValue()));
+            adj.get(3).add(new Node(index, x.intValue()));
+            adj.get(4).add(new Node(index, x.intValue()));
             index++;
         }
 
         Graph dpq = new Graph(SIZE);
         dpq.dijkstra(adj, SOURCE);
 
-        mapOfBusiness.get(rootBusiness).setBusinessGraph(dpq);
+        mapOfBusiness.get(rootBusiness).setBusinessGraphNodes(adj);
 
         for (int i = 0; i < dpq.dist.length; i++) {
             System.out.println(SOURCE + " to " + i + " is "
@@ -490,16 +495,62 @@ public class InfoRetrieval {
         }
     }
 
-    public static void findPath() {
+    public static String findPath() {
         //rZ4WHc8fcopYKCGi7ahwzA = Flying J Travel Center
+        String output = "";
         String startingID = "IX25aSHBIfYd9fbSKlP4qg";
         String destinationID = "rZ4WHc8fcopYKCGi7ahwzA";
 
-        Graph startingGraph = mapOfBusiness.get("IX25aSHBIfYd9fbSKlP4qg").getBusinessGraph();
-        Graph destinationGraph = mapOfBusiness.get("rZ4WHc8fcopYKCGi7ahwzA").getBusinessGraph();
+        List<List<Node>> startingGraphNodes = mapOfBusiness.get("IX25aSHBIfYd9fbSKlP4qg").getBusinessGraphNodes();
+        List<List<Node>> destinationGraphNodes = mapOfBusiness.get("rZ4WHc8fcopYKCGi7ahwzA").getBusinessGraphNodes();
+        Graph startingGraph = new Graph(5);
+        Graph destinationGraph = new Graph(5);
+        startingGraph.dijkstra(startingGraphNodes, 0);
+        destinationGraph.dijkstra(destinationGraphNodes, 0);
+        HashMap<String, Double> startingBusinessNeighbors = mapOfBusiness.get(startingID).getClosestBusiness();
+        HashMap<String, Double> destinationBusinessNeighbors = mapOfBusiness.get(destinationID).getClosestBusiness();
+        System.out.println(mapOfBusiness.get(startingID).getClosestBusiness());
+        System.out.println(mapOfBusiness.get(destinationID).getClosestBusiness());
 
+        // Printing the shortest path to all the nodes
+        // from the source node
+        System.out.println("The shorted path from node :");
 
+        for (int i = 0; i < startingGraph.dist.length; i++) {
+            System.out.println(0 + " to " + i + " is "
+                    + startingGraph.dist[i]);
+        }
+        for (int i = 0; i < destinationGraph.dist.length; i++) {
+            System.out.println(0 + " to " + i + " is "
+                    + destinationGraph.dist[i]);
+        }
+
+        int startingIndex = 1;
+        int destinationIndex = 1;
+        String connectorBusiness = "connection";
+        boolean found = false;
+        for (String x : startingBusinessNeighbors.keySet()) {
+
+            for (String y : destinationBusinessNeighbors.keySet()) {
+                if (x.equals(y)) {
+                    found = true;
+                    connectorBusiness = x;
+                }
+                if (!found) {
+                    destinationIndex++;
+                }
+            }
+            if (!found) {
+                startingIndex++;
+            }
+        }
+        destinationIndex = destinationIndex/startingIndex;
+        System.out.println(startingIndex + " and " + destinationIndex);
+
+        output = mapOfBusiness.get(startingID).getName() + " ==> \n" + mapOfBusiness.get(connectorBusiness).getName()  + " ==>  \n" + mapOfBusiness.get(destinationID).getName();
+        return output;
     }
+
     //DEBUG:
     public static void businessCluster(String id) {
         System.out.println("The four businesses are: ");
@@ -512,31 +563,46 @@ public class InfoRetrieval {
         }
     }
 
+    public static void businessUnionFind() {
+        // Parameters:
+        String sourceID = "IX25aSHBIfYd9fbSKlP4qg";
+        String destinationID = "rZ4WHc8fcopYKCGi7ahwzA";
+
+        DisjointUnionSets sourceBusinessSet = mapOfBusiness.get(sourceID).getClosestBusinessSet();
+
+        DisjointUnionSets destinationBusinessSet = mapOfBusiness.get(destinationID).getClosestBusinessSet();
+        System.out.println("The union set for " + mapOfBusiness.get(sourceID).getName() + " is " + sourceBusinessSet.parent);
+        System.out.println("The union set for " + mapOfBusiness.get(destinationID).getName() + " is " + destinationBusinessSet.parent);
+
+        try {
+            System.out.println(sourceBusinessSet.find("s"));
+        } catch (NullPointerException e) {
+            System.out.println("error");
+        }
 
 
+        System.out.println(destinationBusinessSet.find("_TbQ5yv_U5COLgRfWtYPNQ"));
+    }
+
+    public static ArrayList<String> allBusinessUnionFind() {
+        String sourceID = "IX25aSHBIfYd9fbSKlP4qg";
+        Business sourceBusiness = mapOfBusiness.get(sourceID);
+        boolean valid = false;
+        ArrayList<String> validBusinessNames = new ArrayList<>();
+
+        for (Business business : mapOfBusiness.values()) {
+            valid = false;
+            for (String parent : sourceBusiness.getClosestBusinessSet().parent.keySet()) {
+                try {
+                    business.getClosestBusinessSet().find(parent);
+                    valid = true;
+                } catch (NullPointerException e) {
+                    continue;
+                }
+            }
+            if (valid) validBusinessNames.add(business.getName());
+        }
+        System.out.println(validBusinessNames.size());
+        return validBusinessNames;
+    }
 }
-
-
-//        Business destination = mapOfBusiness.get(destinationID);
-
-
-    /*
-    Deprecated, but kept for memory; redundant because I have 5 clusters that already randomizes
-     */
-//    /*
-//    Generate 1000 businesses that will be sorted into the closest 4
-//    Used for randomness. Don't want all business to be from the same location
-//
-//    Note: These shuffle the business every time. Maybe I should keep them the same.
-//     */
-//    public static void randomBusinessGenerator(String id) {
-//        Random r = new Random(System.currentTimeMillis());
-//        List<Business> shuffledBusiness = new ArrayList<Business>(mapOfBusiness.values());
-//        Collections.shuffle(shuffledBusiness);
-//        String[] randomizedBusiness =  new String[1000];
-//        for (int i = 0; i < 1000; i++) {
-//            randomizedBusiness[i] = shuffledBusiness.get(i).getId();
-//            System.out.println(randomizedBusiness[i]);
-//        }
-//    }
-

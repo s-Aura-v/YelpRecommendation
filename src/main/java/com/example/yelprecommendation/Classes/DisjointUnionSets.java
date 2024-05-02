@@ -35,7 +35,6 @@ class DisjointUnionSets {
 
         if (xRoot.equals(yRoot))
             return;
-
         if (rank.get(xRoot) < rank.get(yRoot))
             parent.put(xRoot, yRoot);
         else if (rank.get(yRoot) < rank.get(xRoot))

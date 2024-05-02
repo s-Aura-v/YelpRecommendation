@@ -8,6 +8,7 @@
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.TitledPane?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -128,7 +129,10 @@
                               </AnchorPane>
                             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="367.0" prefWidth="493.0">
                                  <children>
-                                    <Label fx:id="pathDescLabel" layoutX="14.0" layoutY="21.0" text="The path is: " />
+                                    <Label fx:id="pathDescLabel" layoutX="14.0" layoutY="205.0" text="The path is: " />
+                                    <TextArea fx:id="path" layoutX="31.0" layoutY="235.0" prefHeight="118.0" prefWidth="349.0" />
+                                    <Label fx:id="validBusinessLabel" layoutX="22.0" layoutY="14.0" text="Valid Business List" />
+                                    <ListView fx:id="validBusinessList" layoutX="22.0" layoutY="41.0" prefHeight="134.0" prefWidth="241.0" />
                                  </children></AnchorPane>
                           </items>
                         </SplitPane>

@@ -12,6 +12,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.text.Text;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -107,6 +108,18 @@ public class YelpController {
     @FXML
     private ListView<String> startingBusinessList;
 
+    @FXML
+    private Label pathDescLabel;
+
+    @FXML
+    private TextArea path;
+
+    @FXML
+    private Label validBusinessLabel;
+
+    @FXML
+    private ListView<String> validBusinessList;
+
     HashMap<String, Business> mapOfBusiness;
 
 
@@ -157,6 +170,12 @@ public class YelpController {
         }
     }
 
+    private void updateValidBusinessList(ArrayList<String> businessList) {
+        for (String businessName : businessList) {
+            validBusinessList.getItems().add(businessName);
+        }
+    }
+
     /*
     * Sets the starting point after cosine similarity has been found.
     * Sets the destination based on the cluster that the selected valeus are in
@@ -185,18 +204,17 @@ public class YelpController {
             @Override
             public void handle(MouseEvent event) {
                 String destination = destinationBusinessList.getSelectionModel().getSelectedItem();
-                String destinationID = getIDFromName(destination);
+//                String destinationID = getIDFromName(destination);
+                // TODO: Debug Remove
+                String destinationID = "rZ4WHc8fcopYKCGi7ahwzA";
                 geographicCluster(destinationID);
                 InfoRetrieval.businessCluster(destinationID);
                 InfoRetrieval.createPaths(destinationID);
-                InfoRetrieval.findPath();
+                InfoRetrieval.businessUnionFind();
+                updateValidBusinessList(InfoRetrieval.allBusinessUnionFind());
+                path.setText(InfoRetrieval.findPath());
             }
         });
     }
-
-    /*
-    * Finds how to get from starting point to destination
-     */
-
 
 }

@@ -25,7 +25,6 @@ public class Graph {
         pq = new PriorityQueue<Node>(V, new Node());
     }
 
-    // Method 1
     // Dijkstra's Algorithm
     public void dijkstra(List<List<Node> > adj, int src)
     {
@@ -73,8 +72,6 @@ public class Graph {
                 // If new distance is cheaper in cost
                 if (newDistance < dist[v.node])
                     dist[v.node] = newDistance;
-
-                // Add the current node to the queue
                 pq.add(new Node(v.node, dist[v.node]));
             }
         }

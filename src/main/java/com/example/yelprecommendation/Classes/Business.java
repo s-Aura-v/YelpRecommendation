@@ -2,6 +2,7 @@ package com.example.yelprecommendation.Classes;
 
 import java.io.*;
 import java.util.HashMap;
+import java.util.List;
 
 public class Business implements Serializable {
     @Serial
@@ -18,7 +19,7 @@ public class Business implements Serializable {
     private double longitude;
     private HashMap<String, Double> closestBusiness;
     private DisjointUnionSets closestBusinessSet;
-    private Graph businessGraph;
+    private List<List<Node>> businessGraphNodes;
 
     public Business(String id, String review) {
         this.id = id;
@@ -28,12 +29,12 @@ public class Business implements Serializable {
         closestBusiness = new HashMap<>();
     }
 
-    public Graph getBusinessGraph() {
-        return businessGraph;
+    public List<List<Node>> getBusinessGraphNodes() {
+        return businessGraphNodes;
     }
 
-    public void setBusinessGraph(Graph businessGraph) {
-        this.businessGraph = businessGraph;
+    public void setBusinessGraphNodes(List<List<Node>> businessGraphNodes) {
+        this.businessGraphNodes = businessGraphNodes;
     }
 
     public HashMap<String, Double> getClosestBusiness() {
@@ -170,14 +171,13 @@ public class Business implements Serializable {
     }
 
     public void setClosestBusinessSet() {
-
         String[] elements = closestBusiness.keySet().toArray(new String[0]);
         if (elements.length == 4) {
             closestBusinessSet = new DisjointUnionSets(elements);
         }
     }
 
-    public DisjointUnionSets getClosestBusinessSet(DisjointUnionSets closestBusinessSet) {
+    public DisjointUnionSets getClosestBusinessSet() {
         return closestBusinessSet;
     }
 
