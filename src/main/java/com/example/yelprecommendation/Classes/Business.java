@@ -43,9 +43,11 @@ public class Business implements Serializable {
 
     public void setClosestBusiness(String businessID, double distance) {
         closestBusiness.put(businessID, distance);
-        setClosestBusinessSet();
+        String[] elements = closestBusiness.keySet().toArray(new String[0]);
+        if (elements.length == 4) {
+            closestBusinessSet = new DisjointUnionSets(elements);
+        }
     }
-
     public double getLatitude() {
         return latitude;
     }
@@ -170,12 +172,7 @@ public class Business implements Serializable {
         this.termFrequency = business.termFrequency;
     }
 
-    public void setClosestBusinessSet() {
-        String[] elements = closestBusiness.keySet().toArray(new String[0]);
-        if (elements.length == 4) {
-            closestBusinessSet = new DisjointUnionSets(elements);
-        }
-    }
+
 
     public DisjointUnionSets getClosestBusinessSet() {
         return closestBusinessSet;

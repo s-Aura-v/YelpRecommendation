@@ -44,43 +44,6 @@ class DisjointUnionSets {
             rank.put(xRoot, rank.get(xRoot) + 1);
         }
     }
-
-    // Driver code
-    public static void main(String[] args) {
-        // Let there be 5 persons with ids as "one", "two", "three", "four", "five"
-        String[] elements = {"one", "two", "three", "four", "five"};
-        DisjointUnionSets dus = new DisjointUnionSets(elements);
-
-        dus.union("one", "two");
-
-        // "one" is a friend of "three"
-        dus.union("two", "three");
-
-        // "four" is a friend of "three"
-        dus.union("three", "four");
-
-//        dus.union("one", "four");
-
-
-        System.out.println(dus.parent);
-        System.out.println(dus);
-
-        System.out.println(dus.find("one").equals(dus.find("four")));
-        System.out.println(dus.rank);
-
-        // Check if "four" is a friend of "one"
-        if (dus.find("four").equals(dus.find("one")))
-            System.out.println("Yes");
-        else
-            System.out.println("No");
-
-        // Check if "two" is a friend of "one"
-        if (dus.find("one").equals(dus.find("five")))
-            System.out.println("Yes");
-        else
-            System.out.println("No");
-    }
-
 }
 
 

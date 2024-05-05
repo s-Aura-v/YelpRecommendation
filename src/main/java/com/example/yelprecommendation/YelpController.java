@@ -6,6 +6,9 @@ import com.example.yelprecommendation.Classes.InfoRetrieval;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -120,6 +123,9 @@ public class YelpController {
     @FXML
     private ListView<String> validBusinessList;
 
+    @FXML
+    private LineChart<Number, Number> pathGraph;
+
     HashMap<String, Business> mapOfBusiness;
 
 
@@ -138,6 +144,7 @@ public class YelpController {
         updateRecommendations();
         updateClusters();
         setRoutes();
+        findValidBusinessPath();
     }
 
     private String getIDFromName(String businessName) {
@@ -176,11 +183,39 @@ public class YelpController {
         }
     }
 
+    private void findValidBusinessPath() {
+        validBusinessList.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                String selectedItem = getIDFromName(validBusinessList.getSelectionModel().getSelectedItem());
+                InfoRetrieval.geographicCluster(selectedItem);
+                InfoRetrieval.createPaths(selectedItem);
+                InfoRetrieval.findPath(getIDFromName(startingBusinessList.getSelectionModel().getSelectedItem()), selectedItem);
+                path.setText(InfoRetrieval.findPath(getIDFromName(startingBusinessList.getSelectionModel().getSelectedItem()), selectedItem));
+            }
+        });
+    }
+
+    private void createPathGraph() {
+        final NumberAxis xAxis = new NumberAxis();
+        final NumberAxis yAxis = new NumberAxis();
+        xAxis.setLabel("Latitude");
+        yAxis.setLabel("Longitude");
+        pathGraph = new LineChart<>(xAxis, yAxis);
+
+        XYChart.Series pathNotTaken = new XYChart.Series();
+        pathNotTaken.setName("Neighboring Business");
+        XYChart.Series pathTaken = new XYChart.Series();
+        pathTaken.setName("Path to Business");
+    }
+
+
     /*
     * Sets the starting point after cosine similarity has been found.
     * Sets the destination based on the cluster that the selected valeus are in
      */
     private void setRoutes() {
+        final String[] sourceID = new String[1];
         for (Business business : mapOfBusiness.values()) {
             startingBusinessList.getItems().add(business.getName());
         }
@@ -196,6 +231,7 @@ public class YelpController {
                         destinationBusinessList.getItems().add(business.getName());
                     }
                 }
+                sourceID[0] = selectedBusinessID;
                 geographicCluster(selectedBusinessID);
                 InfoRetrieval.createPaths(selectedBusinessID);
             }
@@ -204,15 +240,16 @@ public class YelpController {
             @Override
             public void handle(MouseEvent event) {
                 String destination = destinationBusinessList.getSelectionModel().getSelectedItem();
-//                String destinationID = getIDFromName(destination);
+                String destinationID = getIDFromName(destination);
                 // TODO: Debug Remove
-                String destinationID = "rZ4WHc8fcopYKCGi7ahwzA";
-                geographicCluster(destinationID);
+//                String destinationID = "rZ4WHc8fcopYKCGi7ahwzA";
+//                geographicCluster(destinationID);
                 InfoRetrieval.businessCluster(destinationID);
+                InfoRetrieval.geographicCluster(destinationID);
                 InfoRetrieval.createPaths(destinationID);
-                InfoRetrieval.businessUnionFind();
-                updateValidBusinessList(InfoRetrieval.allBusinessUnionFind());
-                path.setText(InfoRetrieval.findPath());
+                validBusinessList.getItems().clear();
+                updateValidBusinessList(InfoRetrieval.allBusinessUnionFind(sourceID[0]));
+                path.setText(InfoRetrieval.findPath(sourceID[0], destinationID));
             }
         });
     }

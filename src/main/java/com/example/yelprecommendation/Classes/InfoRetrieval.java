@@ -14,7 +14,6 @@ import static java.lang.Double.MAX_VALUE;
 public class InfoRetrieval {
     static HashMap<String, Business> mapOfBusiness = new HashMap<>();
     static HashMap<String, String> businessNames = new HashMap<>();
-    // Latitude,Longitude
     static HashMap<String, String> businessLocation = new HashMap<>();
     static List<Map.Entry<String, Double>> sortedScores;
     static HT frequencyTable = new HT();
@@ -204,7 +203,6 @@ public class InfoRetrieval {
         sortedScores = new ArrayList<>(scoresWithName.entrySet());
         sortedScores.sort((entry1, entry2) -> entry2.getValue().compareTo(entry1.getValue()));
         findKMeans();
-//        randomBusinessGenerator(businessID);
         geographicCluster(businessID);
         return mapOfBusiness;
     }
@@ -410,20 +408,17 @@ public class InfoRetrieval {
         int cluster = mapOfBusiness.get(id).getCluster();
         double latDistance = 0;
         double longDistance = 0;
-        closestBusiness.clear();
         for (Business experimentBusiness : mapOfBusiness.values()) {
             double controlLat = controlBusiness.getLatitude();
             double controlLong = controlBusiness.getLongitude();
             double experimentLat = experimentBusiness.getLatitude();
             double experimentLong = experimentBusiness.getLongitude();
 
-            // Radians
             latDistance = (controlLat - experimentLat) * (Math.PI / 180);
             longDistance = (controlLong - experimentLong) * (Math.PI / 180);
             controlLat = (controlLat) * (Math.PI / 180);
             experimentLat = (experimentLat) * (Math.PI / 180);
 
-            //Apply Formula
             double a = Math.pow(Math.sin(latDistance / 2), 2) +
                     Math.pow(Math.sin(longDistance / 2), 2) *
                             Math.cos(controlLat) * Math.cos(experimentLat);
@@ -441,7 +436,7 @@ public class InfoRetrieval {
             for (String orderedBusinessID : mapOfBusiness.keySet()) {
                 if (closestBusiness.get(orderedBusinessID) == sortedDistanceList.get(index)) {
                     if (!orderedBusinessID.equals(controlBusiness.getId())) {
-                        // Used for Union-Find
+                        // Creates Disjoint Sets (Used for Union Find)
                         mapOfBusiness.get(controlBusiness.getId()).setClosestBusiness(orderedBusinessID, sortedDistanceList.get(index));
                     }
                 }
@@ -450,17 +445,7 @@ public class InfoRetrieval {
                 break;
             }
         }
-
-        // TODO : uncomment for clarity
-//        System.out.println(controlBusiness + " : " + mapOfBusiness.get(controlBusiness.getId()).getClosestBusiness());
     }
-
-    public void findPath(String subject, String destination) {
-        Business startingBusiness = mapOfBusiness.get(subject);
-        Business destinationBusiness = mapOfBusiness.get(destination);
-
-    }
-
 
     public static void createPaths(String rootBusiness) {
         int SIZE = 5;
@@ -477,10 +462,6 @@ public class InfoRetrieval {
         int index = 1;
         for (Double x : destination.getClosestBusiness().values()) {
             adj.get(0).add(new Node(index, x.intValue()));
-            adj.get(1).add(new Node(index, x.intValue()));
-            adj.get(2).add(new Node(index, x.intValue()));
-            adj.get(3).add(new Node(index, x.intValue()));
-            adj.get(4).add(new Node(index, x.intValue()));
             index++;
         }
 
@@ -495,14 +476,14 @@ public class InfoRetrieval {
         }
     }
 
-    public static String findPath() {
+    public static String findPath(String startingID, String destinationID) {
         //rZ4WHc8fcopYKCGi7ahwzA = Flying J Travel Center
         String output = "";
-        String startingID = "IX25aSHBIfYd9fbSKlP4qg";
-        String destinationID = "rZ4WHc8fcopYKCGi7ahwzA";
+//        String startingID = "IX25aSHBIfYd9fbSKlP4qg";
+//        String destinationID = "rZ4WHc8fcopYKCGi7ahwzA";
 
-        List<List<Node>> startingGraphNodes = mapOfBusiness.get("IX25aSHBIfYd9fbSKlP4qg").getBusinessGraphNodes();
-        List<List<Node>> destinationGraphNodes = mapOfBusiness.get("rZ4WHc8fcopYKCGi7ahwzA").getBusinessGraphNodes();
+        List<List<Node>> startingGraphNodes = mapOfBusiness.get(startingID).getBusinessGraphNodes();
+        List<List<Node>> destinationGraphNodes = mapOfBusiness.get(destinationID).getBusinessGraphNodes();
         Graph startingGraph = new Graph(5);
         Graph destinationGraph = new Graph(5);
         startingGraph.dijkstra(startingGraphNodes, 0);
@@ -512,22 +493,9 @@ public class InfoRetrieval {
         System.out.println(mapOfBusiness.get(startingID).getClosestBusiness());
         System.out.println(mapOfBusiness.get(destinationID).getClosestBusiness());
 
-        // Printing the shortest path to all the nodes
-        // from the source node
-        System.out.println("The shorted path from node :");
-
-        for (int i = 0; i < startingGraph.dist.length; i++) {
-            System.out.println(0 + " to " + i + " is "
-                    + startingGraph.dist[i]);
-        }
-        for (int i = 0; i < destinationGraph.dist.length; i++) {
-            System.out.println(0 + " to " + i + " is "
-                    + destinationGraph.dist[i]);
-        }
-
         int startingIndex = 1;
         int destinationIndex = 1;
-        String connectorBusiness = "connection";
+        String connectorBusiness = "placeholder";
         boolean found = false;
         for (String x : startingBusinessNeighbors.keySet()) {
 
@@ -544,16 +512,17 @@ public class InfoRetrieval {
                 startingIndex++;
             }
         }
-        destinationIndex = destinationIndex/startingIndex;
-        System.out.println(startingIndex + " and " + destinationIndex);
+        destinationIndex = destinationIndex / startingIndex;
+//        System.out.println(startingIndex + " and " + destinationIndex);
 
-        output = mapOfBusiness.get(startingID).getName() + " ==> \n" + mapOfBusiness.get(connectorBusiness).getName()  + " ==>  \n" + mapOfBusiness.get(destinationID).getName();
+        if (!connectorBusiness.equals("placeholder")) {
+            output = mapOfBusiness.get(startingID).getName() + " ==> \n" + mapOfBusiness.get(connectorBusiness).getName() + " ==>  \n" + mapOfBusiness.get(destinationID).getName();
+        }
         return output;
     }
 
     //DEBUG:
     public static void businessCluster(String id) {
-        System.out.println("The four businesses are: ");
         geographicCluster(id);
         int cluster = mapOfBusiness.get(id).getCluster();
         for (Business x : mapOfBusiness.values()) {
@@ -563,29 +532,7 @@ public class InfoRetrieval {
         }
     }
 
-    public static void businessUnionFind() {
-        // Parameters:
-        String sourceID = "IX25aSHBIfYd9fbSKlP4qg";
-        String destinationID = "rZ4WHc8fcopYKCGi7ahwzA";
-
-        DisjointUnionSets sourceBusinessSet = mapOfBusiness.get(sourceID).getClosestBusinessSet();
-
-        DisjointUnionSets destinationBusinessSet = mapOfBusiness.get(destinationID).getClosestBusinessSet();
-        System.out.println("The union set for " + mapOfBusiness.get(sourceID).getName() + " is " + sourceBusinessSet.parent);
-        System.out.println("The union set for " + mapOfBusiness.get(destinationID).getName() + " is " + destinationBusinessSet.parent);
-
-        try {
-            System.out.println(sourceBusinessSet.find("s"));
-        } catch (NullPointerException e) {
-            System.out.println("error");
-        }
-
-
-        System.out.println(destinationBusinessSet.find("_TbQ5yv_U5COLgRfWtYPNQ"));
-    }
-
-    public static ArrayList<String> allBusinessUnionFind() {
-        String sourceID = "IX25aSHBIfYd9fbSKlP4qg";
+    public static ArrayList<String> allBusinessUnionFind(String sourceID) {
         Business sourceBusiness = mapOfBusiness.get(sourceID);
         boolean valid = false;
         ArrayList<String> validBusinessNames = new ArrayList<>();
@@ -602,7 +549,6 @@ public class InfoRetrieval {
             }
             if (valid) validBusinessNames.add(business.getName());
         }
-        System.out.println(validBusinessNames.size());
         return validBusinessNames;
     }
 }
